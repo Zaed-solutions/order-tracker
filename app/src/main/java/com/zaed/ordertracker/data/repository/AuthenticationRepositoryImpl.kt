@@ -1,6 +1,7 @@
-package com.zaed.ordertracker.app.data.repository
+package com.zaed.ordertracker.data.repository
 
-import com.zaed.ordertracker.app.data.source.remote.AuthenticationRemoteSource
+import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSource
+import com.zaed.ordertracker.domain.repository.AuthenticationRepository
 
 class AuthenticationRepositoryImpl(
     private val remoteSource: AuthenticationRemoteSource

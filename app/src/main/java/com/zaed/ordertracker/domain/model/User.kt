@@ -1,4 +1,4 @@
-package com.zaed.ordertracker.app.data.model
+package com.zaed.ordertracker.domain.model
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant

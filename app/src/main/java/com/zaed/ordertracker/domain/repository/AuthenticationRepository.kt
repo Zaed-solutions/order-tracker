@@ -1,4 +1,4 @@
-package com.zaed.ordertracker.app.data.repository
+package com.zaed.ordertracker.domain.repository
 
 interface AuthenticationRepository {
     suspend fun login(

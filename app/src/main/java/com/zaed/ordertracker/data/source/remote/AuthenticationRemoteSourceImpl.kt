@@ -1,6 +1,6 @@
-package com.zaed.ordertracker.app.data.source.remote
+package com.zaed.ordertracker.data.source.remote
 
-import com.zaed.ordertracker.app.data.model.User
+import com.zaed.ordertracker.domain.model.User
 
 class AuthenticationRemoteSourceImpl : AuthenticationRemoteSource {
     override suspend fun login(

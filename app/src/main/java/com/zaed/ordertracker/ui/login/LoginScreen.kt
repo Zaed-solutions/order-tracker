@@ -1,5 +1,9 @@
 package com.zaed.ordertracker.ui.login
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -30,4 +34,14 @@ fun LoginScreenContent(
     state: LoginUiState,
     onAction: (LoginUiAction) -> Unit,
 ) {
+    Scaffold(
+        modifier = modifier,
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier.padding(innerPadding),
+        ) {
+            Column {
+            }
+        }
+    }
 }
