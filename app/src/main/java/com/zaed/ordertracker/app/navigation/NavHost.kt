@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.zaed.ordertracker.ui.login.LoginScreen
 
 @Composable
 fun NavigationHost(
@@ -18,7 +19,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.DefaultRoute,
+        startDestination = Route.LoginRoute,
         enterTransition = {
             fadeIn(
                 animationSpec =
@@ -39,7 +40,11 @@ fun NavigationHost(
         },
     ) {
         composable<Route.LoginRoute> {
-            TODO()
+            LoginScreen(
+                onNavigateToHome= {
+//                    TODO("Navigate to home")
+                }
+            )
         }
     }
 }

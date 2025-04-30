@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "420554258841",
+    "project_id": "shipment-tracker-e5fe3",
+    "storage_bucket": "shipment-tracker-e5fe3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420554258841:android:44d48a5f75afb5ebd9bb08",
+        "android_client_info": {
+          "package_name": "com.zaed.ordertracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8V9wd_kwPqlbFe_uty6hnYL7ZFGfUcI4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

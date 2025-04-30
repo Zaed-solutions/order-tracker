@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Order Tracker</string>
+    <string name="invalid_username">Invalid username</string>
+    <string name="username">Username</string>
+    <string name="invalid_password">Invalid password</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
 </resources>
