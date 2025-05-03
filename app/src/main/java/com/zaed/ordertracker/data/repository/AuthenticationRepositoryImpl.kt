@@ -1,11 +1,13 @@
 package com.zaed.ordertracker.data.repository
 
+import com.zaed.ordertracker.data.source.local.LocalStorage
 import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSource
 import com.zaed.ordertracker.domain.model.User
 import com.zaed.ordertracker.domain.repository.AuthenticationRepository
 
 class AuthenticationRepositoryImpl(
     private val remoteSource: AuthenticationRemoteSource,
+    private val localStorage: LocalStorage
 ) : AuthenticationRepository {
     override suspend fun login(
         username: String,
@@ -17,7 +19,7 @@ class AuthenticationRepositoryImpl(
                 storeLocalUser(user)
             }
 
-    private fun storeLocalUser(user: User) {
-        TODO("Store user data locally")
+    private suspend fun storeLocalUser(user: User) {
+        localStorage.saveCurrentUserId(user.id)
     }
 }

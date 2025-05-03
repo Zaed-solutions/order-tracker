@@ -76,22 +76,26 @@ private fun LoginScreenContent(
         },
     ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.surfaceVariant).padding(innerPadding),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(color = MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(innerPadding),
             contentAlignment = Alignment.Center,
         ) {
             Surface(
                 modifier = Modifier.sizeIn(maxWidth = 300.dp, maxHeight = 500.dp),
                 shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.surface
+                color = MaterialTheme.colorScheme.surface,
             ) {
                 Column(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 32.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     // header logo and title
                     Text(
                         text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.displayMedium,
+                        style = MaterialTheme.typography.headlineMedium,
                     )
                     // username
                     TextInputTextField(
@@ -112,12 +116,12 @@ private fun LoginScreenContent(
                         errorMessage = R.string.invalid_password,
                         placeHolder = stringResource(R.string.password),
                         onValueChange = { password ->
-                            onAction(LoginUiAction.OnUpdateUsername(password))
+                            onAction(LoginUiAction.OnUpdatePassword(password))
                         },
                     )
                     // login button
                     Button(
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 64.dp),
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                         onClick = {
                             onAction(LoginUiAction.OnLoginClicked)
                         },
