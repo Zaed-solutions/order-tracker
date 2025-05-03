@@ -32,10 +32,12 @@ firebaseAuthKtx = "23.0.0"
 firebaseFirestoreKtx = "25.1.0"
 firebaseStorageKtx = "21.0.1"
 uiTextGoogleFonts = "1.7.4"
+datastorePreferences = "1.1.2"
 
 
 
 [libraries]
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
