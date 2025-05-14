@@ -81,6 +81,7 @@ dependencies {
     //Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.androidx.datastore.preferences)
     //Google Fonts
     implementation(libs.androidx.ui.text.google.fonts)
 }
