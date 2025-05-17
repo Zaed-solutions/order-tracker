@@ -73,7 +73,7 @@ fun FlightItem(
                             title = stringResource(R.string.delete),
                             icon = Icons.Default.DeleteOutline,
                             onClick = onDeleteFlight,
-                            tint = MaterialTheme.colorScheme.errorContainer,
+                            tint = MaterialTheme.colorScheme.error,
                         ),
                     ),
             )
