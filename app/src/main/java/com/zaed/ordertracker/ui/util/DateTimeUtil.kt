@@ -1,19 +1,33 @@
 package com.zaed.ordertracker.ui.util
 
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.format.char
+import kotlinx.datetime.format.optional
 import kotlinx.datetime.toLocalDateTime
 
 fun Long.formatEpochSecondsToDate(): String {
     val dateTime = Instant.fromEpochSeconds(this).toLocalDateTime(TimeZone.currentSystemDefault())
-    val month = dateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
+    val month =
+        dateTime.month.name
+            .lowercase()
+            .replaceFirstChar { it.uppercase() }
+            .take(3)
     val day = dateTime.dayOfMonth
     val year = dateTime.year
     return "$month $day, $year"
 }
+
 fun Long.formatEpochSecondsToDateTime(): String {
     val dateTime = Instant.fromEpochSeconds(this).toLocalDateTime(TimeZone.currentSystemDefault())
-    val month = dateTime.month.name.lowercase().replaceFirstChar { it.uppercase() }.take(3)
+    val month =
+        dateTime.month.name
+            .lowercase()
+            .replaceFirstChar { it.uppercase() }
+            .take(3)
     val day = dateTime.dayOfMonth
     val year = dateTime.year
     val hour = dateTime.hour % 12
@@ -22,4 +36,16 @@ fun Long.formatEpochSecondsToDateTime(): String {
     val amPm = if (dateTime.hour < 12) "am" else "pm"
 
     return "$month $day, $year, $formattedHour:$minute $amPm"
+}
+
+fun LocalDateTime.format(): String {
+    val customFormat =
+        LocalDateTime.Format {
+            date(LocalDate.Formats.ISO_BASIC)
+            char(' ')
+            hour()
+            char(':')
+            minute()
+        }
+    return this.format(customFormat)
 }
