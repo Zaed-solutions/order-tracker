@@ -7,6 +7,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSource
 import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSourceImpl
+import com.zaed.ordertracker.data.source.remote.FlightRemoteDataSource
+import com.zaed.ordertracker.data.source.remote.FlightRemoteDataSourceImpl
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -29,5 +31,8 @@ val remoteModule =
         }
         singleOf(::AuthenticationRemoteSourceImpl) {
             bind<AuthenticationRemoteSource>()
+        }
+        singleOf(::FlightRemoteDataSourceImpl) {
+            bind<FlightRemoteDataSource>()
         }
     }

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 sealed interface Route {
     @Serializable
-    data object DefaultRoute : Route
+    data object FlightsRoute : Route
 
     @Serializable
     data object LoginRoute : Route

@@ -5,4 +5,15 @@
     <string name="invalid_password">Invalid password</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="this_action_cannot_be_undone">This action cannot be undone</string>
+    <string name="are_you_sure_you_want_to_delete_this">Are you sure you want to delete this %1$s?</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="update">Update</string>
+    <string name="add">Add</string>
+    <string name="flight">Flight</string>
+    <string name="flights">Flights</string>
+    <string name="flight_number">Flight number</string>
 </resources>

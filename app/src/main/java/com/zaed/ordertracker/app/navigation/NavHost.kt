@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.zaed.ordertracker.ui.flights.FlightsScreen
 import com.zaed.ordertracker.ui.login.LoginScreen
 
 @Composable
@@ -19,10 +20,11 @@ fun NavigationHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
 ) {
+    val context = LocalContext.current
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.LoginRoute,
+        startDestination = Route.FlightsRoute,
         enterTransition = {
             fadeIn(
                 animationSpec =
@@ -43,12 +45,18 @@ fun NavigationHost(
         },
     ) {
         composable<Route.LoginRoute> {
-            val context = LocalContext.current
             LoginScreen(
                 onNavigateToHome= {
 //                    TODO("Navigate to home")
                     Toast.makeText(context, "Navigate to home", Toast.LENGTH_SHORT).show()
                 },
+            )
+        }
+        composable<Route.FlightsRoute> {
+            FlightsScreen (
+                onNavigateBack = {
+                    Toast.makeText(context, "Navigate back", Toast.LENGTH_SHORT).show()
+                }
             )
         }
     }
