@@ -33,6 +33,8 @@ firebaseFirestoreKtx = "25.1.0"
 firebaseStorageKtx = "21.0.1"
 uiTextGoogleFonts = "1.7.4"
 datastorePreferences = "1.1.2"
+firebaseCrashlyticsKtx = "19.4.3"
+adaptiveAndroid = "1.1.0"
 
 
 
@@ -85,6 +87,8 @@ firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx",
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebaseCrashlyticsKtx" }
+androidx-adaptive-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "adaptiveAndroid" }
 
 
 [plugins]
