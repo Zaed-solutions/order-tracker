@@ -8,4 +8,7 @@ sealed interface Route {
 
     @Serializable
     data object LoginRoute : Route
+
+    @Serializable
+    data object SettingsRoute : Route
 }
