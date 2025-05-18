@@ -9,6 +9,8 @@ import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSource
 import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSourceImpl
 import com.zaed.ordertracker.data.source.remote.FlightRemoteDataSource
 import com.zaed.ordertracker.data.source.remote.FlightRemoteDataSourceImpl
+import com.zaed.ordertracker.data.source.remote.ShipmentRemoteDataSource
+import com.zaed.ordertracker.data.source.remote.ShipmentRemoteDataSourceImpl
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -34,5 +36,8 @@ val remoteModule =
         }
         singleOf(::FlightRemoteDataSourceImpl) {
             bind<FlightRemoteDataSource>()
+        }
+        singleOf(::ShipmentRemoteDataSourceImpl){
+            bind<ShipmentRemoteDataSource>()
         }
     }

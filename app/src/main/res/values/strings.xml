@@ -17,4 +17,6 @@
     <string name="flights">Flights</string>
     <string name="flight_number">Flight number</string>
     <string name="google_login_error">Google login Error</string>
+    <string name="shipments">Shipments</string>
+    <string name="master_packages">Master Packages</string>
 </resources>

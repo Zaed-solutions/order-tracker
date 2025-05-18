@@ -1,4 +1,4 @@
-package com.zaed.ordertracker.domain.usecase
+package com.zaed.ordertracker.domain.usecase.authentication
 
 import com.zaed.ordertracker.domain.repository.AuthenticationRepository
 import com.zaed.ordertracker.domain.utils.InvalidPasswordException
