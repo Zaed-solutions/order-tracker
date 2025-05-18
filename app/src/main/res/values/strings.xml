@@ -16,4 +16,5 @@
     <string name="flight">Flight</string>
     <string name="flights">Flights</string>
     <string name="flight_number">Flight number</string>
+    <string name="google_login_error">Google login Error</string>
 </resources>
