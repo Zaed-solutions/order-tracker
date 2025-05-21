@@ -6,45 +6,53 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.ordertracker.domain.model.Shipment
 import com.zaed.ordertracker.domain.usecase.shipment.CreateShipmentUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.DeleteShipmentUseCase
-import com.zaed.ordertracker.domain.usecase.shipment.GetAllShipmentsUseCase
+import com.zaed.ordertracker.domain.usecase.shipment.GetFlightShipmentsUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.UpdateShipmentUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class HomeViewModel(
-    private val getAllShipmentsUseCase: GetAllShipmentsUseCase,
+class FlightDetailsViewModel(
+    private val getFlightShipmentsUseCase: GetFlightShipmentsUseCase,
     private val createShipmentUseCase: CreateShipmentUseCase,
     private val deleteShipmentUseCase: DeleteShipmentUseCase,
     private val updateShipmentUseCase: UpdateShipmentUseCase,
 ) : ViewModel() {
     private val TAG: String = "HomeViewModel"
-    private val _uiState = MutableStateFlow(HomeUiState())
+    private val _uiState = MutableStateFlow(FlightDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        fetchShipments()
+    fun init(flightId: String) {
+        Log.d(TAG, "init: flightId: $flightId")
+        _uiState.update { it.copy(flightId = flightId) }
+        fetchShipments(flightId)
     }
 
-    private fun fetchShipments() {
+    private fun fetchShipments(flightId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            getAllShipmentsUseCase().collect { result ->
+            getFlightShipmentsUseCase(flightId).collect { result ->
                 result
                     .onSuccess { shipments ->
-                        _uiState.value = HomeUiState(shipments = shipments)
+                        _uiState.update { oldState ->
+                            oldState.copy(isLoading = false, shipments = shipments)
+                        }
                     }.onFailure {
-                        _uiState.value = HomeUiState(isLoading = false)
+                        _uiState.update { oldState ->
+                            oldState.copy(isLoading = false)
+                        }
                     }
             }
         }
     }
 
-    fun handleAction(action: HomeUiAction) {
+    fun handleAction(action: FlightDetailsUiAction) {
         when (action) {
-            is HomeUiAction.AddShipment -> addShipment(action.shipment)
-            is HomeUiAction.UpdateShipment -> updateShipment(action.updatedShipment)
-            is HomeUiAction.DeleteShipment -> deleteShipment(action.shipmentId)
+            is FlightDetailsUiAction.AddShipment -> addShipment(action.shipment)
+            is FlightDetailsUiAction.UpdateShipment -> updateShipment(action.updatedShipment)
+            is FlightDetailsUiAction.DeleteShipment -> deleteShipment(action.shipmentId)
+            else -> Unit
         }
     }
 
@@ -72,7 +80,7 @@ class HomeViewModel(
 
     private fun addShipment(shipment: Shipment) {
         viewModelScope.launch(Dispatchers.IO) {
-            createShipmentUseCase(shipment)
+            createShipmentUseCase(shipment.copy(flightId = uiState.value.flightId))
                 .onSuccess {
                     Log.d(TAG, "addShipment: success")
                 }.onFailure {

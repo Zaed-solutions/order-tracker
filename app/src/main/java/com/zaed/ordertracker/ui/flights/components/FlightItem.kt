@@ -22,23 +22,21 @@ import com.zaed.ordertracker.R
 import com.zaed.ordertracker.domain.model.Flight
 import com.zaed.ordertracker.ui.components.MoreDropDownMenu
 import com.zaed.ordertracker.ui.components.MoreDropdownItem
-import com.zaed.ordertracker.ui.util.format
+import com.zaed.ordertracker.ui.util.formatDateTime
 
 @Composable
 fun FlightItem(
     modifier: Modifier = Modifier,
     onEditFlight: () -> Unit,
     onDeleteFlight: () -> Unit,
+    onFlightClicked: () -> Unit,
     flight: Flight,
 ) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-    ) {
+    Surface(modifier = modifier.fillMaxWidth(), onClick = {
+        onFlightClicked()
+    }) {
         Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Icon(
@@ -55,7 +53,7 @@ fun FlightItem(
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
-                    text = flight.date.format(),
+                    text = flight.date.formatDateTime(),
                     style = MaterialTheme.typography.titleSmall,
                 )
             }

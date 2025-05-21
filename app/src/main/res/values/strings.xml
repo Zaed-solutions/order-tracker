@@ -19,4 +19,20 @@
     <string name="google_login_error">Google login Error</string>
     <string name="shipments">Shipments</string>
     <string name="master_packages">Master Packages</string>
+    <string name="pcs_template">%1$s PCS</string>
+    <string name="kg_template">%1$s kg</string>
+    <string name="add_shipment">Add Shipment</string>
+    <string name="update_shipment">Update Shipment</string>
+    <string name="shipment_number">Shipment Number</string>
+    <string name="quantity">Quantity</string>
+    <string name="weight">Weight</string>
+    <string name="type">Type</string>
+    <string name="shipment">Shipment</string>
+    <string name="time">Time</string>
+    <string name="date">Date</string>
+    <string name="t_b">T/B</string>
+    <string name="kg">KG</string>
+    <string name="pcs">PCS</string>
+    <string name="smno">SMNO</string>
+    <string name="flight_details">Flight Details</string>
 </resources>
