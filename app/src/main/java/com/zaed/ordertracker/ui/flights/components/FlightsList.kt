@@ -16,6 +16,7 @@ fun FlightsList(
     modifier: Modifier = Modifier,
     onEditFlight: (Flight) -> Unit,
     onDeleteFlight: (Flight) -> Unit,
+    onFlightClicked: (Flight) -> Unit,
     flights: List<Flight>,
 ) {
     LazyVerticalGrid(
@@ -30,6 +31,7 @@ fun FlightsList(
                 flight = flight,
                 onEditFlight = { onEditFlight(flight) },
                 onDeleteFlight = { onDeleteFlight(flight) },
+                onFlightClicked = { onFlightClicked(flight) }
             )
         }
     }

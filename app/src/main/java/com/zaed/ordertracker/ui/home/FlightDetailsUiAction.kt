@@ -2,16 +2,18 @@ package com.zaed.ordertracker.ui.home
 
 import com.zaed.ordertracker.domain.model.Shipment
 
-sealed interface HomeUiAction {
+sealed interface FlightDetailsUiAction {
     data class AddShipment(
         val shipment: Shipment,
-    ) : HomeUiAction
+    ) : FlightDetailsUiAction
 
     data class UpdateShipment(
         val updatedShipment: Shipment,
-    ) : HomeUiAction
+    ) : FlightDetailsUiAction
 
     data class DeleteShipment(
         val shipmentId: String,
-    ) : HomeUiAction
+    ) : FlightDetailsUiAction
+
+    data object NavigateBack : FlightDetailsUiAction
 }

@@ -14,16 +14,18 @@ class ShipmentRemoteDataSourceImpl(
 ) : ShipmentRemoteDataSource {
     private val shipmentCollection = firestore.collection("shipments")
 
-    override fun getAllShipments(): Flow<Result<List<Shipment>>> =
+    override fun getFlightShipments(flightId: String): Flow<Result<List<Shipment>>> =
         callbackFlow {
             try {
-                shipmentCollection.addSnapshotListener { snapshot, error ->
-                    if (error != null) {
-                        trySend(Result.failure(error))
+                shipmentCollection
+                    .whereEqualTo(ShipmentDto::flightId.name, flightId)
+                    .addSnapshotListener { snapshot, error ->
+                        if (error != null) {
+                            trySend(Result.failure(error))
+                        }
+                        val shipments = snapshot?.toObjects(ShipmentDto::class.java) ?: emptyList()
+                        trySend(Result.success(shipments.map(ShipmentDto::toShipment)))
                     }
-                    val shipments = snapshot?.toObjects(ShipmentDto::class.java) ?: emptyList()
-                    trySend(Result.success(shipments.map(ShipmentDto::toShipment)))
-                }
             } catch (e: Exception) {
                 trySend(Result.failure(e))
             }
@@ -40,23 +42,21 @@ class ShipmentRemoteDataSourceImpl(
             Result.failure(e)
         }
 
-    override suspend fun updateShipment(updatedShipment: Shipment): Result<Unit> {
-        return try{
+    override suspend fun updateShipment(updatedShipment: Shipment): Result<Unit> =
+        try {
             shipmentCollection
                 .document(updatedShipment.id)
                 .set(updatedShipment.toShipmentDto())
             Result.success(Unit)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Result.failure(e)
         }
-    }
 
-    override suspend fun deleteShipment(shipmentId: String): Result<Unit> {
-        return try {
+    override suspend fun deleteShipment(shipmentId: String): Result<Unit> =
+        try {
             shipmentCollection.document(shipmentId).delete()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
-    }
 }

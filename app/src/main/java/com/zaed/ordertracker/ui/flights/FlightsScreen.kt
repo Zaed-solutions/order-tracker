@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -34,16 +33,20 @@ fun FlightsScreen(
     modifier: Modifier = Modifier,
     viewModel: FlightsViewModel = koinViewModel(),
     onNavigateBack: () -> Unit,
+    onNavigateToFlightDetails: (String) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     FlightsScreenContent(
         state = state,
         onAction = { action ->
-            when(action){
+            when (action) {
                 FlightsUiAction.NavigateBack -> onNavigateBack()
-                else -> { viewModel.handleAction(action)}
+                is FlightsUiAction.NavigateToFlightDetails -> onNavigateToFlightDetails(action.flightId)
+                else -> {
+                    viewModel.handleAction(action)
+                }
             }
-        }
+        },
     )
 }
 
@@ -69,21 +72,21 @@ fun FlightsScreenContent(
                 title = {
                     Text(
                         text = stringResource(R.string.flights),
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
                     )
                 },
                 navigationIcon = {
                     IconButton(
                         onClick = {
                             onAction(FlightsUiAction.NavigateBack)
-                        }
+                        },
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
@@ -110,6 +113,9 @@ fun FlightsScreenContent(
                 onEditFlight = {
                     selectedFlight = it
                     isSaveFlightSheetVisible = true
+                },
+                onFlightClicked = {
+                    onAction(FlightsUiAction.NavigateToFlightDetails(it.id))
                 },
             )
             SaveFlightBottomSheet(

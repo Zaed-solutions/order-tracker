@@ -17,7 +17,7 @@ lottieCompose = "6.5.2"
 playServicesAuth = "21.2.0"
 kotlinComposeCompilerPlugin = "2.0.0"
 kotlinComposeCompilerPluginEmbeddable = "2.0.0"
-composeBom = "2024.08.00"
+composeBom = "2025.05.00"
 coilCompose = "2.7.0"
 materialIconsExtended = "1.7.0-rc01"
 realm = "2.0.0"
@@ -35,6 +35,7 @@ uiTextGoogleFonts = "1.7.4"
 datastorePreferences = "1.1.2"
 firebaseCrashlyticsKtx = "19.4.3"
 adaptiveAndroid = "1.1.0"
+material = "1.12.0"
 
 
 
@@ -81,6 +82,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "googleAuthLibraryOauth2Http" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
