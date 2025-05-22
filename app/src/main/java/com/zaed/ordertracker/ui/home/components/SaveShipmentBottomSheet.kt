@@ -78,9 +78,9 @@ fun SaveShipmentBottomSheet(
                 )
                 NumberInputTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = shipment.quantity.toDouble(),
+                    value = shipment.quantity,
                     onValueChange = {
-                        shipment = shipment.copy(quantity = it.toInt())
+                        shipment = shipment.copy(quantity = it)
                     },
                     label = stringResource(R.string.quantity),
                     withBorder = true,
