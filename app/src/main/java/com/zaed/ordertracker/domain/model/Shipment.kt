@@ -7,6 +7,7 @@ import kotlinx.datetime.toLocalDateTime
 
 data class Shipment(
     val id: String = "",
+    val masterPackageId: String = "",
     val shipmentNumber: String = "",
     val quantity: Int = 1,
     val weight: Double = 0.0,

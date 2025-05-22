@@ -65,4 +65,15 @@ class MasterPackageRemoteSourceImpl(
             return Result.failure(e)
         }
     }
+
+    override suspend fun getMasterPackageById(masterPackageId: String): Result<MasterPackage> {
+        try {
+            val document = masterPackagesCollection.document(masterPackageId).get().await()
+            val masterPackage = document.toObject(MasterPackage::class.java)?: return Result.failure(Exception("MasterPackage not found"))
+            return Result.success(masterPackage)
+        }catch (e: Exception){
+            crashlytics.recordException(e)
+            return Result.failure(e)
+        }
+    }
 }

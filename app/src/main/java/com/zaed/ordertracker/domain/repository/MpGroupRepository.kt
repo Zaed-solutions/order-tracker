@@ -18,4 +18,5 @@ interface MpGroupRepository {
     fun getMasterPackagesByFlightId(flightId: String): Flow<Result<List<MasterPackage>>>
     suspend fun editMasterPackage(masterPackage: MasterPackage): Result<Unit>
     suspend fun deleteMasterPackage(masterPackageId: String): Result<Unit>
+    suspend fun getMasterPackageById(masterPackageId: String): Result<MasterPackage>
 }

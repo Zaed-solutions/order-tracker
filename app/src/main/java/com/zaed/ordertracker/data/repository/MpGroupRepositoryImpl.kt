@@ -58,4 +58,8 @@ class MpGroupRepositoryImpl(
     override suspend fun deleteMasterPackage(masterPackageId: String): Result<Unit> {
         return masterPackageDataSource.deleteMasterPackage(masterPackageId)
     }
+
+    override suspend fun getMasterPackageById(masterPackageId: String): Result<MasterPackage> {
+        return masterPackageDataSource.getMasterPackageById(masterPackageId)
+    }
 }

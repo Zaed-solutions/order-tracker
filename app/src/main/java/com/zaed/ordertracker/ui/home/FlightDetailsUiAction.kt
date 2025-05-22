@@ -30,5 +30,8 @@ sealed interface FlightDetailsUiAction {
     data class EditMasterPackage(
         val masterPackage: MasterPackage,
     ) : FlightDetailsUiAction
+    data class OnMasterPackageClicked(
+        val masterPackage: MasterPackage,
+    ) : FlightDetailsUiAction
 }
 

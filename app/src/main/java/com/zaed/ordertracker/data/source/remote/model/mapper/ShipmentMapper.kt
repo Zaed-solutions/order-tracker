@@ -13,6 +13,7 @@ fun Shipment.toShipmentDto() =
         shipmentNumber = shipmentNumber,
         quantity = quantity,
         weight = weight,
+        masterPackageId = masterPackageId,
         addedAtEpochSeconds = addedAt.toInstant(TimeZone.currentSystemDefault()).epochSeconds,
         type = type.name,
         addedById = addedById,
@@ -24,6 +25,7 @@ fun ShipmentDto.toShipment() =
     Shipment(
         id = id,
         shipmentNumber = shipmentNumber,
+        masterPackageId = masterPackageId,
         quantity = quantity,
         weight = weight,
         addedAt =

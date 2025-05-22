@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -54,29 +58,29 @@ fun ShipmentsScreenContent(
             modifier
                 .fillMaxWidth(),
     ) {
-        AnimatedContent(windowWidthSizeClass) {
-            when (it) {
-                WindowWidthSizeClass.COMPACT ->
-                    CompactShipmentsHeader(
-                        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-                        onAddShipmentClicked = {
-                            selectedShipment = Shipment()
-                            isSaveShipmentBottomSheetVisible = true
-                        },
-                    )
-
-                else ->
-                    ExpandedShipmentsHeader(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        onAddShipmentClicked = {
-                            selectedShipment = Shipment()
-                            isSaveShipmentBottomSheetVisible = true
-                        },
-                    )
-            }
-        }
+//        AnimatedContent(windowWidthSizeClass) {
+//            when (it) {
+//                WindowWidthSizeClass.COMPACT ->
+//                    CompactShipmentsHeader(
+//                        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
+//                        onAddShipmentClicked = {
+//                            selectedShipment = Shipment()
+//                            isSaveShipmentBottomSheetVisible = true
+//                        },
+//                    )
+//
+//                else ->
+//                    ExpandedShipmentsHeader(
+//                        modifier = Modifier.padding(horizontal = 16.dp),
+//                        onAddShipmentClicked = {
+//                            selectedShipment = Shipment()
+//                            isSaveShipmentBottomSheetVisible = true
+//                        },
+//                    )
+//            }
+//        }
         LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(vertical = 16.dp),
         ) {
@@ -109,6 +113,28 @@ fun ShipmentsScreenContent(
                     )
                 }
             }
+        }
+        Button(
+            onClick = {
+                isSaveShipmentBottomSheetVisible = true
+            },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.Save,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Add New Shipment",
+                style = MaterialTheme.typography.labelLarge
+            )
         }
         SaveShipmentBottomSheet(
             isVisible = isSaveShipmentBottomSheetVisible,

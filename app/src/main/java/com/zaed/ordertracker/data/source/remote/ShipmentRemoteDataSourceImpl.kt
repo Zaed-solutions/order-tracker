@@ -59,4 +59,18 @@ class ShipmentRemoteDataSourceImpl(
         } catch (e: Exception) {
             Result.failure(e)
         }
+
+    override suspend fun getShipmentsByMasterPackageId(masterPackageId: String): Flow<Result<List<Shipment>>> = callbackFlow {
+        try {
+            shipmentCollection.whereEqualTo(ShipmentDto::masterPackageId.name, masterPackageId).addSnapshotListener{ snapshot, error ->
+                if (error != null) {
+                    trySend(Result.failure(error))
+                }
+                val shipments = snapshot?.toObjects(ShipmentDto::class.java) ?: emptyList()
+                trySend(Result.success(shipments.map(ShipmentDto::toShipment)))
+            }
+        }catch (e: Exception){
+            trySend(Result.failure(e))
+        }
+    }
 }

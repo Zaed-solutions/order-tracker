@@ -23,4 +23,8 @@ class ShipmentRepositoryImpl(
     override suspend fun deleteShipment(shipmentId: String): Result<Unit> {
         return shipmentRemoteSource.deleteShipment(shipmentId)
     }
+
+    override suspend fun getShipmentsByMasterPackageId(masterPackageId: String): Flow<Result<List<Shipment>>> {
+        return shipmentRemoteSource.getShipmentsByMasterPackageId(masterPackageId)
+    }
 }

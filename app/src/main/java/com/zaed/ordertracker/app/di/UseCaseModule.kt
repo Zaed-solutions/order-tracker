@@ -6,6 +6,7 @@ import com.zaed.ordertracker.domain.usecase.DeleteMasterPackageUseCase
 import com.zaed.ordertracker.domain.usecase.DeleteMpGroupUseCase
 import com.zaed.ordertracker.domain.usecase.EditMasterPackageUseCase
 import com.zaed.ordertracker.domain.usecase.ExportMasterPackagesUseCase
+import com.zaed.ordertracker.domain.usecase.GetMasterPackageWithShipmentsUseCase
 import com.zaed.ordertracker.domain.usecase.GetMasterPackagesByFlightIdUseCase
 import com.zaed.ordertracker.domain.usecase.GetMpGroupByIdUseCase
 import com.zaed.ordertracker.domain.usecase.GetMpGroupsUseCase
@@ -47,4 +48,5 @@ val useCaseModule =
         singleOf(::GetMasterPackagesByFlightIdUseCase)
         singleOf(::EditMasterPackageUseCase)
         singleOf(::DeleteMasterPackageUseCase)
+        singleOf(::GetMasterPackageWithShipmentsUseCase)
     }

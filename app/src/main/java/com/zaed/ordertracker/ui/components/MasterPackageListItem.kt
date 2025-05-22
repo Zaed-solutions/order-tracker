@@ -88,6 +88,7 @@ fun MasterPackageScreenContent(
     onDeleteMasterPackage: (MasterPackage) -> Unit = {},
     onEditMasterPackageGroup: (MpGroup) -> Unit = {},
     onDeleteMasterPackageGroup: (MpGroup) -> Unit = {},
+    onMasterPackageClicked : (MasterPackage) -> Unit = {},
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
     var selectedMasterPackage by remember { mutableStateOf(MasterPackage()) }
@@ -121,8 +122,8 @@ fun MasterPackageScreenContent(
                 if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                     CompactMasterPackageGroupListItem(
                         masterPackageGroup = group,
-                        onEditMasterPackageGroup = {},
-                        onDeleteMasterPackageGroup = {}
+                        onEditMasterPackageGroup = {/*TODO*/},
+                        onDeleteMasterPackageGroup = {/*TODO*/}
                     )
                 } else {
                     MasterPackageGroupListItem(
@@ -134,7 +135,7 @@ fun MasterPackageScreenContent(
                         onDeleteMasterPackageGroup = {
                             selectedMasterPackageGroup = it
                             isDeleteMasterPackageGroupBottomSheetVisible = true
-                        }
+                        },
                     )
                     HorizontalDivider(Modifier.padding(top = 8.dp))
                 }
@@ -151,7 +152,8 @@ fun MasterPackageScreenContent(
                         onDeleteMasterPackage = {
                             selectedMasterPackage = it
                             isDeleteMasterPackageBottomSheetVisible = true
-                        }
+                        },
+                        onMasterPackageClicked = onMasterPackageClicked
                     )
                 } else {
                     MasterPackageListItem(
@@ -163,7 +165,8 @@ fun MasterPackageScreenContent(
                         onDeleteMasterPackage = {
                             selectedMasterPackage = it
                             isDeleteMasterPackageBottomSheetVisible = true
-                        }
+                        },
+                        onMasterPackageClicked = onMasterPackageClicked
                     )
                     HorizontalDivider(Modifier.padding(top = 8.dp))
                 }
@@ -748,122 +751,127 @@ fun MasterPackageListItem(
     masterPackage: MasterPackage,
     onEditMasterPackage: (MasterPackage) -> Unit = {},
     onDeleteMasterPackage: (MasterPackage) -> Unit = {},
+    onMasterPackageClicked: (MasterPackage) -> Unit = {}
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(top = 8.dp)
+    Surface (
+        onClick = {onMasterPackageClicked(masterPackage)},
     ) {
-        //STATUS ICON
-        Icon(
-            imageVector = if (masterPackage.isExported) Icons.Filled.Circle else Icons.Outlined.Circle,
-            contentDescription = "MP Status",
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier.padding(top = 8.dp)
+        ) {
+            //STATUS ICON
+            Icon(
+                imageVector = if (masterPackage.isExported) Icons.Filled.Circle else Icons.Outlined.Circle,
+                contentDescription = "MP Status",
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
+            )
 
-        //MP ICON
-        Surface(
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentSize()
-                .padding(horizontal = 8.dp),
-            shape = RoundedCornerShape(4.dp),
-            border = BorderStroke(2.dp, MaterialTheme.colorScheme.outline)
-        ) {
-            Text(
-                text = masterPackage.name,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 4.dp)
-            )
-        }
-        //KG
-        Text(
-            text = masterPackage.shipments.sumOf { it.weight }.toString(),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp)
-        )
-        //PCS
-        Text(
-            text = masterPackage.count.toString(),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp)
-        )
-        //MP KG
-        Text(
-            text = masterPackage.weightKg.toString(),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp)
-        )
-        //T/B
-        Surface(
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentSize()
-                .padding(horizontal = 8.dp),
-            shape = RoundedCornerShape(8.dp),
-            color = when (masterPackage.type) {
-                MasterPackageType.T -> Color.Blue
-                else -> Color.Yellow
+            //MP ICON
+            Surface(
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentSize()
+                    .padding(horizontal = 8.dp),
+                shape = RoundedCornerShape(4.dp),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.outline)
+            ) {
+                Text(
+                    text = masterPackage.name,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
             }
-        ) {
+            //KG
             Text(
-                text = masterPackage.type.name,
-                fontWeight = FontWeight.Bold,
+                text = masterPackage.shipments.sumOf { it.weight }.toString(),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 8.dp),
-                color = when (masterPackage.type) {
-                    MasterPackageType.T -> Color.White
-                    else -> Color.Black
-                }
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp)
             )
-        }
-        //PENDING STATUS
-        if (masterPackage.isPnd)
+            //PCS
+            Text(
+                text = masterPackage.count.toString(),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp)
+            )
+            //MP KG
+            Text(
+                text = masterPackage.weightKg.toString(),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp)
+            )
+            //T/B
             Surface(
                 modifier = Modifier
                     .weight(1f)
                     .wrapContentSize()
                     .padding(horizontal = 8.dp),
                 shape = RoundedCornerShape(8.dp),
-                color = Color.Red
+                color = when (masterPackage.type) {
+                    MasterPackageType.T -> Color.Blue
+                    else -> Color.Yellow
+                }
             ) {
                 Text(
-                    text = "PND",
+                    text = masterPackage.type.name,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    color = when (masterPackage.type) {
+                        MasterPackageType.T -> Color.White
+                        else -> Color.Black
+                    }
                 )
             }
-        else
-            Spacer(Modifier.weight(1f))
-        MoreDropDownMenu(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 8.dp),
-            items = listOf(
-                MoreDropdownItem(
-                    title = stringResource(R.string.edit),
-                    icon = Icons.Default.Edit,
-                    onClick = { onEditMasterPackage(masterPackage) },
-                    tint = MaterialTheme.colorScheme.primary,
+            //PENDING STATUS
+            if (masterPackage.isPnd)
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .wrapContentSize()
+                        .padding(horizontal = 8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color.Red
+                ) {
+                    Text(
+                        text = "PND",
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                }
+            else
+                Spacer(Modifier.weight(1f))
+            MoreDropDownMenu(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp),
+                items = listOf(
+                    MoreDropdownItem(
+                        title = stringResource(R.string.edit),
+                        icon = Icons.Default.Edit,
+                        onClick = { onEditMasterPackage(masterPackage) },
+                        tint = MaterialTheme.colorScheme.primary,
+                    ),
+                    MoreDropdownItem(
+                        title = stringResource(R.string.delete),
+                        icon = Icons.Default.DeleteOutline,
+                        onClick = { onDeleteMasterPackage(masterPackage) },
+                        tint = MaterialTheme.colorScheme.error,
+                    ),
                 ),
-                MoreDropdownItem(
-                    title = stringResource(R.string.delete),
-                    icon = Icons.Default.DeleteOutline,
-                    onClick = { onDeleteMasterPackage(masterPackage) },
-                    tint = MaterialTheme.colorScheme.error,
-                ),
-            ),
-        )
+            )
 
+        }
     }
 }
 
@@ -995,6 +1003,7 @@ fun CompactMasterPackageListItem(
     masterPackage: MasterPackage,
     onEditMasterPackage: (MasterPackage) -> Unit = {},
     onDeleteMasterPackage: (MasterPackage) -> Unit = {},
+    onMasterPackageClicked: (MasterPackage) -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -1005,7 +1014,8 @@ fun CompactMasterPackageListItem(
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        onClick = { onMasterPackageClicked(masterPackage) }
     ) {
         Column(
             modifier = Modifier
