@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 class ShipmentRepositoryImpl(
     private val shipmentRemoteSource: ShipmentRemoteDataSource
 ): ShipmentRepository {
-    override fun getAllShipments(): Flow<Result<List<Shipment>>> {
-        return shipmentRemoteSource.getAllShipments()
+    override fun getFlightShipments(flightId: String): Flow<Result<List<Shipment>>> {
+        return shipmentRemoteSource.getFlightShipments(flightId)
     }
 
     override suspend fun createShipment(shipment: Shipment): Result<Unit> {

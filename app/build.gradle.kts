@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.realm)
     alias(libs.plugins.firebase)
     id("com.google.firebase.crashlytics")
-
 }
 
 android {
@@ -28,7 +27,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -42,6 +41,11 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes.add("META-INF/DEPENDENCIES")
+        }
+    }
 }
 
 dependencies {
@@ -54,6 +58,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.material)
     implementation(libs.firebase.crashlytics.ktx)
     implementation(libs.androidx.adaptive.android)
     testImplementation(libs.junit)
@@ -65,33 +70,33 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.kotlin.compose.compiler.plugin)
 
-    //Kotlinx-Serialization
+    // Kotlinx-Serialization
     implementation(libs.kotlinx.serialization.json)
-    //Kotlinx-DateTime
+    // Kotlinx-DateTime
     implementation(libs.kotlinx.datetime)
-    //Compose ViewModel Lifecycle
+    // Compose ViewModel Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    //Compose Navigation
+    // Compose Navigation
     implementation(libs.androidx.navigation.compose)
-    //Material3 Extended Icons
+    // Material3 Extended Icons
     implementation(libs.androidx.material.icons.extended)
-    //Kotlinx-Coroutines
-    implementation (libs.kotlinx.coroutines.core)
-    //Coil
+    // Kotlinx-Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    // Coil
     implementation(libs.coil.compose)
-    //Koin
+    // Koin
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.androidx.compose.navigation)
-    //Firebase
+    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.datastore.preferences)
-    //Google Fonts
+    // Google Fonts
     implementation(libs.androidx.ui.text.google.fonts)
 
     implementation("com.google.api-client:google-api-client-android:1.33.0")
-    implementation ("com.google.api-client:google-api-client:2.0.0")
-    implementation ("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
-    implementation ("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
-    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.api-client:google-api-client:2.0.0")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+    implementation("com.google.apis:google-api-services-drive:v3-rev20220815-2.0.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 }

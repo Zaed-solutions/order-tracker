@@ -41,6 +41,7 @@ fun NumberInputTextField(
     withBorder: Boolean = false,
     shape: Shape = RoundedCornerShape(32.dp),
     containerColor: Color = MaterialTheme.colorScheme.background,
+    keyboardType: KeyboardType = KeyboardType.Decimal
 ) {
     var textValue by remember { mutableStateOf(value.toString()) }
     OutlinedTextField(
@@ -92,7 +93,7 @@ fun NumberInputTextField(
         enabled = enabled,
         isError = isError,
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         trailingIcon = trailingIcon,
         supportingText =
             if (isError) {

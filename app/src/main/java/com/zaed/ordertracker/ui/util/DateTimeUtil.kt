@@ -1,51 +1,47 @@
 package com.zaed.ordertracker.ui.util
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.char
-import kotlinx.datetime.format.optional
-import kotlinx.datetime.toLocalDateTime
 
-fun Long.formatEpochSecondsToDate(): String {
-    val dateTime = Instant.fromEpochSeconds(this).toLocalDateTime(TimeZone.currentSystemDefault())
-    val month =
-        dateTime.month.name
-            .lowercase()
-            .replaceFirstChar { it.uppercase() }
-            .take(3)
-    val day = dateTime.dayOfMonth
-    val year = dateTime.year
-    return "$month $day, $year"
-}
-
-fun Long.formatEpochSecondsToDateTime(): String {
-    val dateTime = Instant.fromEpochSeconds(this).toLocalDateTime(TimeZone.currentSystemDefault())
-    val month =
-        dateTime.month.name
-            .lowercase()
-            .replaceFirstChar { it.uppercase() }
-            .take(3)
-    val day = dateTime.dayOfMonth
-    val year = dateTime.year
-    val hour = dateTime.hour % 12
-    val formattedHour = (if (hour == 0) 12 else hour).toString().padStart(2, '0')
-    val minute = dateTime.minute.toString().padStart(2, '0')
-    val amPm = if (dateTime.hour < 12) "am" else "pm"
-
-    return "$month $day, $year, $formattedHour:$minute $amPm"
-}
-
-fun LocalDateTime.format(): String {
+fun LocalDateTime.formatDateTime(): String {
     val customFormat =
         LocalDateTime.Format {
-            date(LocalDate.Formats.ISO_BASIC)
+            year()
+            char('/')
+            monthNumber()
+            char('/')
+            dayOfMonth()
             char(' ')
             hour()
             char(':')
             minute()
+            char(' ')
+            amPmMarker("am", "pm")
+        }
+    return this.format(customFormat)
+}
+
+fun LocalDateTime.formatTime(): String {
+    val customFormat =
+        LocalDateTime.Format {
+            hour()
+            char(':')
+            minute()
+            char(' ')
+            amPmMarker("am", "pm")
+        }
+    return this.format(customFormat)
+}
+
+fun LocalDateTime.formatDate(): String {
+    val customFormat =
+        LocalDateTime.Format {
+            year()
+            char('/')
+            monthNumber()
+            char('/')
+            dayOfMonth()
         }
     return this.format(customFormat)
 }

@@ -78,6 +78,7 @@ fun SaveFlightBottomSheet(
                                 .padding(end = 8.dp)
                                 .weight(1f),
                         onClick = { onDismiss() },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                     ) {
                         Text(text = stringResource(id = R.string.cancel))
                     }
@@ -87,7 +88,6 @@ fun SaveFlightBottomSheet(
                                 .widthIn(min = 100.dp)
                                 .weight(1f),
                         onClick = { onSaveFlight(flight) },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                     ) {
                         Text(text = stringResource(if (initialFlight.id.isNotBlank()) R.string.update else R.string.add))
                     }
