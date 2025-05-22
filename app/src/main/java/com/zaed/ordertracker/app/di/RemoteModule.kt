@@ -1,5 +1,7 @@
 package com.zaed.ordertracker.app.di
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.PersistentCacheSettings
@@ -9,6 +11,10 @@ import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSource
 import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSourceImpl
 import com.zaed.ordertracker.data.source.remote.FlightRemoteDataSource
 import com.zaed.ordertracker.data.source.remote.FlightRemoteDataSourceImpl
+import com.zaed.ordertracker.data.source.remote.MasterPackageRemoteSource
+import com.zaed.ordertracker.data.source.remote.MasterPackageRemoteSourceImpl
+import com.zaed.ordertracker.data.source.remote.MpGroupRemoteSource
+import com.zaed.ordertracker.data.source.remote.MpGroupRemoteSourceImpl
 import com.zaed.ordertracker.data.source.remote.ShipmentRemoteDataSource
 import com.zaed.ordertracker.data.source.remote.ShipmentRemoteDataSourceImpl
 import org.koin.core.module.dsl.bind
@@ -17,6 +23,9 @@ import org.koin.dsl.module
 
 val remoteModule =
     module {
+        single<FirebaseCrashlytics> {
+            Firebase.crashlytics
+        }
         single<FirebaseFirestore> {
             val db = Firebase.firestore
             val settings =
@@ -39,5 +48,11 @@ val remoteModule =
         }
         singleOf(::ShipmentRemoteDataSourceImpl){
             bind<ShipmentRemoteDataSource>()
+        }
+        singleOf(::MpGroupRemoteSourceImpl){
+            bind<MpGroupRemoteSource>()
+        }
+        singleOf(::MasterPackageRemoteSourceImpl){
+            bind<MasterPackageRemoteSource>()
         }
     }
