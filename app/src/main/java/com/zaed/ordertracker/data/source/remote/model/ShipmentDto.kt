@@ -11,4 +11,8 @@ data class ShipmentDto(
     val addedById: String = "",
     val exported: Boolean = false,
     val flightId: String = "",
+    val masterPackageWeight: Double = 0.0,
+    val masterPackageName: String = "",
+    val userName: String = "",
+    val userId: String = "",
 )
