@@ -43,3 +43,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+//val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass

@@ -9,5 +9,3 @@ data class MpGroup(
     val canEditName :Boolean = true,
     val canDelete :Boolean = true,
 )
-
-

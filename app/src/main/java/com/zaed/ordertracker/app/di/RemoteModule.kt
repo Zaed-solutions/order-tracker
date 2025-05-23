@@ -40,6 +40,9 @@ val remoteModule =
             db.firestoreSettings = settings
             db
         }
+        single<FirebaseCrashlytics> {
+            Firebase.crashlytics
+        }
         singleOf(::AuthenticationRemoteSourceImpl) {
             bind<AuthenticationRemoteSource>()
         }
@@ -54,5 +57,20 @@ val remoteModule =
         }
         singleOf(::MasterPackageRemoteSourceImpl){
             bind<MasterPackageRemoteSource>()
+        }
+        singleOf(::UserRemoteSourceImpl) {
+            bind<UserRemoteSource>()
+        }
+        singleOf(::MpGroupRemoteSourceImpl) {
+            bind<MpGroupRemoteSource>()
+        }
+        singleOf(::MpGroupRemoteSourceImpl) {
+            bind<MpGroupRemoteSource>()
+        }
+        singleOf(::ExportationFolderDataSourceImpl){
+            bind<ExportationFolderDataSource>()
+        }
+        singleOf(::FirebaseCredentialDataSourceImpl){
+            bind<FirebaseCredentialDataSource>()
         }
     }

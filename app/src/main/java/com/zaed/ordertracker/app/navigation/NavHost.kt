@@ -102,5 +102,14 @@ fun NavigationHost(
                 },
             )
         }
+        composable<Route.SettingsRoute> {
+            val context = LocalContext.current
+            SettingsScreen(
+                onNavigateBack = {
+//                    TODO("Navigate back")
+                    Toast.makeText(context, "Navigate Back", Toast.LENGTH_SHORT).show()
+                },
+            )
+        }
     }
 }
