@@ -1,5 +1,6 @@
 package com.zaed.ordertracker.app.navigation
 
+import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -16,6 +17,7 @@ import com.zaed.ordertracker.ui.home.FlightDetailsScreen
 import com.zaed.ordertracker.ui.login.LoginScreen
 import com.zaed.ordertracker.ui.masterpackagedetails.MasterPackageDetailsScreen
 import com.zaed.ordertracker.ui.masterpkggroupdetails.MasterPackageGroupDetailsScreen
+import com.zaed.ordertracker.ui.settings.SettingsScreen
 
 @Composable
 fun NavigationHost(

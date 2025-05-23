@@ -9,6 +9,10 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSource
 import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSourceImpl
+import com.zaed.ordertracker.data.source.remote.ExportationFolderDataSource
+import com.zaed.ordertracker.data.source.remote.ExportationFolderDataSourceImpl
+import com.zaed.ordertracker.data.source.remote.FirebaseCredentialDataSource
+import com.zaed.ordertracker.data.source.remote.FirebaseCredentialDataSourceImpl
 import com.zaed.ordertracker.data.source.remote.FlightRemoteDataSource
 import com.zaed.ordertracker.data.source.remote.FlightRemoteDataSourceImpl
 import com.zaed.ordertracker.data.source.remote.MasterPackageRemoteSource
@@ -17,6 +21,8 @@ import com.zaed.ordertracker.data.source.remote.MpGroupRemoteSource
 import com.zaed.ordertracker.data.source.remote.MpGroupRemoteSourceImpl
 import com.zaed.ordertracker.data.source.remote.ShipmentRemoteDataSource
 import com.zaed.ordertracker.data.source.remote.ShipmentRemoteDataSourceImpl
+import com.zaed.ordertracker.data.source.remote.UserRemoteSource
+import com.zaed.ordertracker.data.source.remote.UserRemoteSourceImpl
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
