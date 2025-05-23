@@ -19,6 +19,10 @@ fun Shipment.toShipmentDto() =
         addedById = addedById,
         exported = exported,
         flightId = flightId,
+        masterPackageWeight = masterPackageWeight,
+        masterPackageName = masterPackageName,
+        userName = userName,
+        userId = userId,
     )
 
 fun ShipmentDto.toShipment() =
@@ -36,4 +40,8 @@ fun ShipmentDto.toShipment() =
         addedById = addedById,
         exported = exported,
         flightId = flightId,
+        masterPackageWeight = masterPackageWeight,
+        masterPackageName = masterPackageName,
+        userName = userName,
+        userId = userId,
     )
