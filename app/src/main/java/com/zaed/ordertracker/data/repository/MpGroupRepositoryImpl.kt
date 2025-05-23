@@ -20,31 +20,31 @@ class MpGroupRepositoryImpl(
         groupId: String,
         color: String
     ): Result<Unit> {
-        TODO("Not yet implemented")
+        return mpGroupDataSource.updateMpGroupBackgroundColor(groupId, color)
     }
 
     override suspend fun getMpGroupById(groupId: String): Result<MpGroup> {
-        TODO("Not yet implemented")
+        return mpGroupDataSource.getMpGroupById(groupId)
     }
 
     override suspend fun addMasterPackageToGroup(
         groupId: String,
         masterPackage: MasterPackage
     ): Result<Unit> {
-        TODO("Not yet implemented")
+        return mpGroupDataSource.addMasterPackageToGroup(groupId, masterPackage)
     }
 
     override suspend fun addNewMasterPackage(masterPackage: MasterPackage): Result<Unit>  = masterPackageDataSource.addNewMasterPackage(masterPackage)
 
     override suspend fun updateMasterPackage(masterPackage: MasterPackage): Result<Unit> {
-        TODO("Not yet implemented")
+        return mpGroupDataSource.updateMasterPackage(masterPackage)
     }
 
     override suspend fun exportMasterPackages(
         groupId: String,
         masterPackageIds: List<String>
     ): Result<Unit> {
-        TODO("Not yet implemented")
+        return mpGroupDataSource.exportMasterPackages(groupId, masterPackageIds)
     }
 
     override fun getMasterPackagesByFlightId(flightId: String): Flow<Result<List<MasterPackage>>> {

@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -89,6 +90,7 @@ fun MasterPackageScreenContent(
     onEditMasterPackageGroup: (MpGroup) -> Unit = {},
     onDeleteMasterPackageGroup: (MpGroup) -> Unit = {},
     onMasterPackageClicked : (MasterPackage) -> Unit = {},
+    onMasterPackageGroupClicked : (MpGroup) -> Unit = {},
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
     var selectedMasterPackage by remember { mutableStateOf(MasterPackage()) }
@@ -123,7 +125,8 @@ fun MasterPackageScreenContent(
                     CompactMasterPackageGroupListItem(
                         masterPackageGroup = group,
                         onEditMasterPackageGroup = {/*TODO*/},
-                        onDeleteMasterPackageGroup = {/*TODO*/}
+                        onDeleteMasterPackageGroup = {/*TODO*/},
+                        onMasterPackageGroupClicked = onMasterPackageGroupClicked
                     )
                 } else {
                     MasterPackageGroupListItem(
@@ -136,6 +139,7 @@ fun MasterPackageScreenContent(
                             selectedMasterPackageGroup = it
                             isDeleteMasterPackageGroupBottomSheetVisible = true
                         },
+                        onMasterPackageGroupClicked = onMasterPackageGroupClicked
                     )
                     HorizontalDivider(Modifier.padding(top = 8.dp))
                 }
@@ -881,11 +885,14 @@ fun MasterPackageGroupListItem(
     masterPackageGroup: MpGroup,
     onEditMasterPackageGroup: (MpGroup) -> Unit = {},
     onDeleteMasterPackageGroup: (MpGroup) -> Unit = {},
+    onMasterPackageGroupClicked: (MpGroup) -> Unit = {},
 ) {
     val pndCount = remember { masterPackageGroup.masterPackages.count { it.isPnd } }
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(top = 8.dp)
+        modifier = modifier
+            .padding(top = 8.dp)
+            .clickable { onMasterPackageGroupClicked(masterPackageGroup) }
     ) {
         //STATUS ICON
         Icon(
@@ -1147,13 +1154,15 @@ fun CompactMasterPackageGroupListItem(
     masterPackageGroup: MpGroup,
     onEditMasterPackageGroup: (MpGroup) -> Unit = {},
     onDeleteMasterPackageGroup: (MpGroup) -> Unit = {},
+    onMasterPackageGroupClicked: (MpGroup) -> Unit = {},
 ) {
     val pndCount = remember { masterPackageGroup.masterPackages.count { it.isPnd } }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clickable { onMasterPackageGroupClicked(masterPackageGroup) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
             contentColor = MaterialTheme.colorScheme.onSurfaceVariant

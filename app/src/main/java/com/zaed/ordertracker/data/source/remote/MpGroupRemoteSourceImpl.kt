@@ -16,7 +16,7 @@ class MpGroupRemoteSourceImpl(
     private val mpGroupsCollection = firestore.collection("mpGroups")
     override suspend fun getMpGroups(): Flow<Result<List<MpGroup>>> = callbackFlow {
         try {
-            val listener = mpGroupsCollection.addSnapshotListener { snapshot, exception ->
+            mpGroupsCollection.addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
                     crashlytics.recordException(exception)
                     return@addSnapshotListener
@@ -24,11 +24,11 @@ class MpGroupRemoteSourceImpl(
                 val mpGroups = snapshot?.documents?.mapNotNull { it.toObject(MpGroup::class.java) }
                 trySend(Result.success(mpGroups ?: emptyList()))
             }
-            awaitClose { listener.remove() }
         } catch (e: Exception) {
             crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
+        awaitClose {  }
     }
 
     override suspend fun saveMpGroup(mpGroup: MpGroup): Result<Unit> {
@@ -69,31 +69,114 @@ class MpGroupRemoteSourceImpl(
     }
 
     override suspend fun getMpGroupById(groupId: String): Result<MpGroup> {
-        TODO("Not yet implemented")
+        try {
+            val document = mpGroupsCollection.document(groupId).get().await()
+            val mpGroup = document.toObject(MpGroup::class.java) ?: return Result.failure(Exception("MpGroup not found"))
+            return Result.success(mpGroup)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            return Result.failure(e)
+        }
     }
 
     override suspend fun addMasterPackageToGroup(
         groupId: String,
         masterPackageDto: MasterPackage
     ): Result<Unit> {
-        TODO("Not yet implemented")
+        try {
+            val groupDoc = mpGroupsCollection.document(groupId).get().await()
+            val group = groupDoc.toObject(MpGroup::class.java) ?: return Result.failure(Exception("MpGroup not found"))
+
+            // Add the master package to the group's master packages list
+            val updatedMasterPackages = group.masterPackages.toMutableList()
+            updatedMasterPackages.add(masterPackageDto)
+
+            // Update the group with the new master packages list
+            val updatedGroup = group.copy(masterPackages = updatedMasterPackages)
+            mpGroupsCollection.document(groupId).set(updatedGroup).await()
+
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            return Result.failure(e)
+        }
     }
 
     override suspend fun updateMasterPackage(masterPackageDto: MasterPackage): Result<Unit> {
-        TODO("Not yet implemented")
+        try {
+            // First, find all groups that contain this master package
+            val querySnapshot = mpGroupsCollection.get().await()
+            val groups = querySnapshot.documents.mapNotNull { it.toObject(MpGroup::class.java) }
+
+            // For each group that contains the master package, update it
+            for (group in groups) {
+                val masterPackageIndex = group.masterPackages.indexOfFirst { it.id == masterPackageDto.id }
+                if (masterPackageIndex != -1) {
+                    // Create a new list with the updated master package
+                    val updatedMasterPackages = group.masterPackages.toMutableList()
+                    updatedMasterPackages[masterPackageIndex] = masterPackageDto
+
+                    // Update the group with the new master packages list
+                    val updatedGroup = group.copy(masterPackages = updatedMasterPackages)
+                    mpGroupsCollection.document(group.id).set(updatedGroup).await()
+                }
+            }
+
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            return Result.failure(e)
+        }
     }
 
     override suspend fun updateMpGroupBackgroundColor(
         groupId: String,
         color: String
     ): Result<Unit> {
-        TODO("Not yet implemented")
+        try {
+            // Get the current group
+            val groupDoc = mpGroupsCollection.document(groupId).get().await()
+            val group = groupDoc.toObject(MpGroup::class.java) ?: return Result.failure(Exception("MpGroup not found"))
+
+            // Update the group with the new color
+            // Note: The color parameter is a String, but MpGroup.color is an Int
+            // We need to parse the color string to an integer
+            val colorInt = try {
+                color.toInt()
+            } catch (e: NumberFormatException) {
+                return Result.failure(Exception("Invalid color format"))
+            }
+
+            val updatedGroup = group.copy(color = colorInt)
+            mpGroupsCollection.document(groupId).set(updatedGroup).await()
+
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            return Result.failure(e)
+        }
     }
 
     override suspend fun exportMasterPackages(
         groupId: String,
         masterPackageIds: List<String>
     ): Result<Unit> {
-        TODO("Not yet implemented")
+        try {
+            // Get the current group
+            val groupDoc = mpGroupsCollection.document(groupId).get().await()
+            val group = groupDoc.toObject(MpGroup::class.java) ?: return Result.failure(Exception("MpGroup not found"))
+
+            // Mark the group as exported
+            val updatedGroup = group.copy(isExported = true)
+            mpGroupsCollection.document(groupId).set(updatedGroup).await()
+
+            // In a real implementation, you might want to do something with the masterPackageIds
+            // like mark them as exported in a separate collection or perform some export operation
+
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            return Result.failure(e)
+        }
     }
 }

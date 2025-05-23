@@ -14,6 +14,8 @@ import androidx.navigation.toRoute
 import com.zaed.ordertracker.ui.flights.FlightsScreen
 import com.zaed.ordertracker.ui.home.FlightDetailsScreen
 import com.zaed.ordertracker.ui.login.LoginScreen
+import com.zaed.ordertracker.ui.masterpackagedetails.MasterPackageDetailsScreen
+import com.zaed.ordertracker.ui.masterpkggroupdetails.MasterPackageGroupDetailsScreen
 
 @Composable
 fun NavigationHost(
@@ -71,7 +73,33 @@ fun NavigationHost(
                 flightId = flightId,
                 onNavigateBack = {
                     navController.popBackStack()
+                },
+                onNavigateToMasterPackageDetails = { masterPackageId ->
+                    navController.navigate(Route.MasterPackageDetailsRoute(masterPackageId))
+                },
+                onNavigateToMasterPackageGroupDetails = { masterPackageGroupId ->
+                    navController.navigate(Route.MasterPackageGroupDetailsRoute(masterPackageGroupId))
                 }
+            )
+        }
+
+        composable<Route.MasterPackageDetailsRoute> { navBackStackEntry ->
+            val masterPackageId = navBackStackEntry.toRoute<Route.MasterPackageDetailsRoute>().masterPackageId
+            MasterPackageDetailsScreen(
+                masterPackageId = masterPackageId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+            )
+        }
+
+        composable<Route.MasterPackageGroupDetailsRoute> { navBackStackEntry ->
+            val masterPackageGroupId = navBackStackEntry.toRoute<Route.MasterPackageGroupDetailsRoute>().masterPackageGroupId
+            MasterPackageGroupDetailsScreen(
+                groupId = masterPackageGroupId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
             )
         }
     }

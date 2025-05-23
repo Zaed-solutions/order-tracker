@@ -2,6 +2,7 @@ package com.zaed.ordertracker.ui.home
 
 import android.graphics.Color
 import com.zaed.ordertracker.domain.model.MasterPackage
+import com.zaed.ordertracker.domain.model.MpGroup
 import com.zaed.ordertracker.domain.model.Shipment
 
 sealed interface FlightDetailsUiAction {
@@ -33,5 +34,8 @@ sealed interface FlightDetailsUiAction {
     data class OnMasterPackageClicked(
         val masterPackage: MasterPackage,
     ) : FlightDetailsUiAction
-}
 
+    data class OnMasterPackageGroupClicked(
+        val group: MpGroup,
+    ) : FlightDetailsUiAction
+}

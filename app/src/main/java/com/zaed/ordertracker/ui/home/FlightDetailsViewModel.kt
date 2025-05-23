@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.ordertracker.domain.model.MasterPackage
+import com.zaed.ordertracker.domain.model.MpGroup
 import com.zaed.ordertracker.domain.model.Shipment
 import com.zaed.ordertracker.domain.usecase.AddMasterPackageToGroupUseCase
 import com.zaed.ordertracker.domain.usecase.AddMasterPackageUseCase
@@ -12,6 +13,7 @@ import com.zaed.ordertracker.domain.usecase.ExportMasterPackagesUseCase
 import com.zaed.ordertracker.domain.usecase.GetMasterPackagesByFlightIdUseCase
 import com.zaed.ordertracker.domain.usecase.GetMpGroupByIdUseCase
 import com.zaed.ordertracker.domain.usecase.GetMpGroupsUseCase
+import com.zaed.ordertracker.domain.usecase.SaveMpGroupUseCase
 import com.zaed.ordertracker.domain.usecase.UpdateMasterPackageUseCase
 import com.zaed.ordertracker.domain.usecase.UpdateMpGroupBackgroundColorUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.CreateShipmentUseCase
@@ -31,15 +33,12 @@ class FlightDetailsViewModel(
     private val updateShipmentUseCase: UpdateShipmentUseCase,
 
     private val getMpGroupsUseCase: GetMpGroupsUseCase,
-    private val getMpGroupByIdUseCase: GetMpGroupByIdUseCase,
-    private val addMasterPackageToGroupUseCase: AddMasterPackageToGroupUseCase,
     private val updateMasterPackageUseCase: UpdateMasterPackageUseCase,
-    private val updateMpGroupBackgroundColorUseCase: UpdateMpGroupBackgroundColorUseCase,
     private val exportMasterPackagesUseCase: ExportMasterPackagesUseCase,
     private val addNewMasterPackage: AddMasterPackageUseCase,
     private val getMasterPackagesByFlightIdUseCase: GetMasterPackagesByFlightIdUseCase,
     private val deleteMasterPackageUseCase: DeleteMasterPackageUseCase,
-    private val editMasterPackageUseCase: UpdateMasterPackageUseCase,
+    private val saveMpGroupUseCase: SaveMpGroupUseCase,
 ) : ViewModel() {
     private val TAG: String = "HomeViewModel"
     private val _uiState = MutableStateFlow(FlightDetailsUiState())
@@ -50,6 +49,22 @@ class FlightDetailsViewModel(
         _uiState.update { it.copy(flightId = flightId) }
         fetchShipments(flightId)
         fetchMasterPackages()
+        fetchGroups()
+    }
+
+    private fun fetchGroups() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getMpGroupsUseCase().collect { result ->
+                result.onSuccess { groups ->
+                    _uiState.update { oldState ->
+                        Log.d(TAG, "fetchGroups: groups: ${groups.size}")
+                        oldState.copy(groups = groups)
+                    }
+                }.onFailure {
+                    Log.e(TAG, "fetchGroups: ", it)
+                }
+            }
+        }
     }
 
     private fun fetchMasterPackages() {
@@ -82,9 +97,11 @@ class FlightDetailsViewModel(
 
     private fun editMasterPackage(masterPackage: MasterPackage) {
         viewModelScope.launch(Dispatchers.IO) {
-            editMasterPackageUseCase(masterPackage).fold(
+            updateMasterPackageUseCase(masterPackage).fold(
                 onSuccess = {
                     Log.d(TAG, "editMasterPackage: success")
+                    // Check if the master package should be added to a group
+                    checkAndAddToGroup(masterPackage)
                 },
                 onFailure = {
                     Log.e(TAG, "editMasterPackage: ", it)
@@ -125,7 +142,76 @@ class FlightDetailsViewModel(
 
     private fun addNewMasterPackage(masterPackage: MasterPackage) {
         viewModelScope.launch(Dispatchers.IO) {
-            addNewMasterPackage.invoke(masterPackage.copy(flightId = uiState.value.flightId))
+            // First, add the master package to the database
+            val masterPackageWithFlightId = masterPackage.copy(flightId = uiState.value.flightId)
+            addNewMasterPackage.invoke(masterPackageWithFlightId)
+
+            // Then, check if it should be added to a group
+            checkAndAddToGroup(masterPackageWithFlightId)
+        }
+    }
+
+    private suspend fun checkAndAddToGroup(masterPackage: MasterPackage) {
+        // Extract the prefix from the master package name
+        // The prefix is the alphabetic part at the beginning of the name
+        val name = masterPackage.name
+        val prefixMatch = Regex("^([A-Za-z]+)\\d+.*$").find(name)
+
+        Log.d(TAG, "checkAndAddToGroup: masterPackage name: $name")
+
+        if (prefixMatch != null) {
+            val prefix = prefixMatch.groupValues[1]
+            Log.d(TAG, "checkAndAddToGroup: extracted prefix: $prefix")
+
+            // Check if there's already a group with this prefix
+            getMpGroupsUseCase().collect { result ->
+                result.onSuccess { groups ->
+                    // First, check if the master package is already in any group
+                    val groupContainingMasterPackage = groups.find { group ->
+                        group.masterPackages.any { it.id == masterPackage.id }
+                    }
+
+                    Log.d(TAG, "checkAndAddToGroup: groups count: ${groups.size}")
+                    Log.d(TAG, "checkAndAddToGroup: masterPackage already in group: ${groupContainingMasterPackage?.name}")
+
+                    // If the master package is already in a group with a different name,
+                    // remove it from that group
+                    if (groupContainingMasterPackage != null && groupContainingMasterPackage.name != prefix) {
+                        Log.d(TAG, "checkAndAddToGroup: removing masterPackage from group: ${groupContainingMasterPackage.name}")
+                        val updatedMasterPackages = groupContainingMasterPackage.masterPackages.filter { it.id != masterPackage.id }
+                        val updatedGroup = groupContainingMasterPackage.copy(masterPackages = updatedMasterPackages)
+                        saveMpGroupUseCase(updatedGroup)
+                    }
+
+                    // Look for a group with the same prefix
+                    val targetGroup = groups.find { it.name == prefix }
+
+                    Log.d(TAG, "checkAndAddToGroup: found target group with prefix $prefix: ${targetGroup != null}")
+
+                    if (targetGroup != null) {
+                        // Check if the master package is already in this group
+                        val alreadyInGroup = targetGroup.masterPackages.any { it.id == masterPackage.id }
+                        Log.d(TAG, "checkAndAddToGroup: masterPackage already in target group: $alreadyInGroup")
+
+                        if (!alreadyInGroup) {
+                            // Add the master package to the existing group
+                            Log.d(TAG, "checkAndAddToGroup: adding masterPackage to existing group: ${targetGroup.name}")
+                            val updatedMasterPackages = targetGroup.masterPackages.toMutableList()
+                            updatedMasterPackages.add(masterPackage)
+                            val updatedGroup = targetGroup.copy(masterPackages = updatedMasterPackages)
+                            saveMpGroupUseCase(updatedGroup)
+                        }
+                    } else {
+                        // Create a new group with the prefix as the name
+                        Log.d(TAG, "checkAndAddToGroup: creating new group with name: $prefix")
+                        val newGroup = MpGroup(
+                            name = prefix,
+                            masterPackages = listOf(masterPackage)
+                        )
+                        saveMpGroupUseCase(newGroup)
+                    }
+                }
+            }
         }
     }
 

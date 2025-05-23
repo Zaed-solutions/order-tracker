@@ -15,5 +15,15 @@ sealed interface Route {
     ) : Route
 
     @Serializable
+    data class MasterPackageDetailsRoute(
+        val masterPackageId: String,
+    ) : Route
+
+    @Serializable
+    data class MasterPackageGroupDetailsRoute(
+        val masterPackageGroupId: String,
+    ) : Route
+
+    @Serializable
     data object HomeRoute : Route
 }

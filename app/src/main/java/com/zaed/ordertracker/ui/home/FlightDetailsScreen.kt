@@ -48,6 +48,7 @@ fun FlightDetailsScreen(
     onNavigateBack: () -> Unit,
     viewModel: FlightDetailsViewModel = koinViewModel(),
     onNavigateToMasterPackageDetails: (String) -> Unit = {},
+    onNavigateToMasterPackageGroupDetails: (String) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(true) {
@@ -61,6 +62,9 @@ fun FlightDetailsScreen(
                 FlightDetailsUiAction.NavigateBack -> onNavigateBack()
                 is FlightDetailsUiAction.OnMasterPackageClicked -> {
                     onNavigateToMasterPackageDetails(action.masterPackage.id)
+                }
+                is FlightDetailsUiAction.OnMasterPackageGroupClicked -> {
+                    onNavigateToMasterPackageGroupDetails(action.group.id)
                 }
                 else -> viewModel.handleAction(action)
             }
@@ -182,6 +186,9 @@ private fun FlightDetailsScreenContent(
                             },
                             onMasterPackageClicked = {
                                 onAction(FlightDetailsUiAction.OnMasterPackageClicked(it))
+                            },
+                            onMasterPackageGroupClicked = {
+                                onAction(FlightDetailsUiAction.OnMasterPackageGroupClicked(it))
                             },
                             windowWidthSizeClass = windowWidthSizeClass
                         )
