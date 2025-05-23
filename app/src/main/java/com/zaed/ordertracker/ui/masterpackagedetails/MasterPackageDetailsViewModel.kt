@@ -34,7 +34,11 @@ class MasterPackageDetailsViewModel(
             getMasterPackageWithShipmentsUseCase(masterPackageId).collect { result ->
                 result.fold(
                     onSuccess = { masterPackage ->
-                        _uiState.value = _uiState.value.copy(masterPackage = masterPackage)
+                        Log.d(
+                            TAG,
+                            "${MasterPackageDetailsViewModel::fetchMasterPackageWithShipments.name}: ${masterPackage.shipments.size}"
+                        )
+                        _uiState.value = _uiState.value.copy(masterPackage = masterPackage,shipments = masterPackage.shipments)
                     },
                     onFailure = {
                         Log.d(
@@ -110,7 +114,7 @@ class MasterPackageDetailsViewModel(
 
     private fun addNewShipment(shipment: Shipment) {
         viewModelScope.launch(Dispatchers.IO) {
-            addMasterPackageShipmentUseCase.invoke(shipment).fold(
+            addMasterPackageShipmentUseCase.invoke(shipment.copy(masterPackageId = uiState.value.masterPackage.id)).fold(
                 onSuccess = {
                     Log.d(TAG, "${MasterPackageDetailsViewModel::addNewShipment.name}: success")
                 },

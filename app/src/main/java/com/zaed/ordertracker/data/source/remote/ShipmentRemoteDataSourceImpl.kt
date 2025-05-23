@@ -1,5 +1,6 @@
 package com.zaed.ordertracker.data.source.remote
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.ordertracker.data.source.remote.model.ShipmentDto
 import com.zaed.ordertracker.data.source.remote.model.mapper.toShipment
@@ -34,6 +35,7 @@ class ShipmentRemoteDataSourceImpl(
 
     override suspend fun createShipment(shipment: Shipment): Result<Unit> =
         try {
+            Log.d("ShipmentRemoteDataSource", "Creating shipment: $shipment")
             shipmentCollection.document().let { docRef ->
                 docRef.set(shipment.toShipmentDto().copy(id = docRef.id))
             }
@@ -72,5 +74,6 @@ class ShipmentRemoteDataSourceImpl(
         }catch (e: Exception){
             trySend(Result.failure(e))
         }
+        awaitClose{}
     }
 }

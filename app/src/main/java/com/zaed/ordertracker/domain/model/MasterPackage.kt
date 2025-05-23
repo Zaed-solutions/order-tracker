@@ -5,6 +5,7 @@ data class MasterPackage(
     val name: String="",
     val count: Int = 1,
     val flightId: String = "",
+    val groupId: String = "",
     val type: MasterPackageType = MasterPackageType.T,
     val weightKg: Double = 0.0,
     val isExported: Boolean = false,

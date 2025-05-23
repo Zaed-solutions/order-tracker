@@ -23,6 +23,10 @@ class MpGroupRepositoryImpl(
         return mpGroupDataSource.updateMpGroupBackgroundColor(groupId, color)
     }
 
+    override fun getMasterPackagesByGroupId(groupId: String): Flow<Result<List<MasterPackage>>> {
+        return masterPackageDataSource.getMasterPackagesByGroupId(groupId)
+    }
+
     override suspend fun getMpGroupById(groupId: String): Result<MpGroup> {
         return mpGroupDataSource.getMpGroupById(groupId)
     }

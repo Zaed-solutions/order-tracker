@@ -45,7 +45,24 @@ class MasterPackageRemoteSourceImpl(
             }
         awaitClose{}
     }
-
+    override fun getMasterPackagesByGroupId(groupId: String): Flow<Result<List<MasterPackage>>> = callbackFlow{
+        val filter = Filter.equalTo(MasterPackage::groupId.name, groupId)
+        masterPackagesCollection.where(filter).addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                crashlytics.recordException(error)
+                trySend(Result.failure(error))
+                return@addSnapshotListener
+            } else {
+                Log.d(MasterPackageRemoteSourceImpl::class.simpleName, "${MasterPackageRemoteSourceImpl::getMasterPackagesByGroupId.name}: snapshot: ${snapshot?.documents?.size}")
+                val masterPackages = snapshot?.documents?.mapNotNull {
+                    it.toObject(MasterPackage::class.java)
+                } ?: emptyList()
+                trySend(Result.success(masterPackages))
+                return@addSnapshotListener
+            }
+        }
+        awaitClose{}
+    }
     override suspend fun editMasterPackage(masterPackage: MasterPackage): Result<Unit> {
        try {
            masterPackagesCollection.document(masterPackage.id).set(masterPackage).await()
@@ -76,4 +93,6 @@ class MasterPackageRemoteSourceImpl(
             return Result.failure(e)
         }
     }
+
+
 }
