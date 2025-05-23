@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:name=".app.MainApplication"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/Theme.OrderTracker"
         tools:targetApi="31">
         <activity

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 fun MoreDropDownMenu(
     modifier: Modifier = Modifier,
     isVertical: Boolean = true,
+    enabled: Boolean = true,
     items: List<MoreDropdownItem>,
 ) {
     var isOptionsMenuVisible by remember { mutableStateOf(false) }
@@ -38,6 +39,7 @@ fun MoreDropDownMenu(
                 .wrapContentSize(Alignment.TopEnd),
     ) {
         IconButton(
+            enabled = enabled,
             onClick = { isOptionsMenuVisible = !isOptionsMenuVisible },
         ) {
             Icon(

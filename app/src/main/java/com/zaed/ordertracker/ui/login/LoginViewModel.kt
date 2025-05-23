@@ -2,7 +2,7 @@ package com.zaed.ordertracker.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.ordertracker.domain.usecase.LoginUserUseCase
+import com.zaed.ordertracker.domain.usecase.authentication.LoginUserUseCase
 import com.zaed.ordertracker.domain.utils.InvalidPasswordException
 import com.zaed.ordertracker.domain.utils.InvalidUsernameException
 import com.zaed.ordertracker.domain.utils.UserNotFoundException
