@@ -31,27 +31,27 @@ class MpGroupRemoteSourceImpl(
         awaitClose {  }
     }
 
-    override suspend fun saveMpGroup(mpGroup: MpGroup): Result<Unit> {
+    override suspend fun saveMpGroup(mpGroup: MpGroup): Result<String> {
         return if (mpGroup.id.isEmpty()) {
             addMpGroup(mpGroup)
         } else {
             updateMpGroup(mpGroup)
         }
     }
-    private suspend fun addMpGroup(mpGroup: MpGroup): Result<Unit> {
+    private suspend fun addMpGroup(mpGroup: MpGroup): Result<String> {
         try {
             val docRef = mpGroupsCollection.document()
             docRef.set(mpGroup.copy(id = docRef.id)).await()
-            return Result.success(Unit)
+            return Result.success(docRef.id)
         } catch (e: Exception) {
             crashlytics.recordException(e)
             return Result.failure(e)
         }
     }
-    private suspend fun updateMpGroup(mpGroup: MpGroup): Result<Unit> {
+    private suspend fun updateMpGroup(mpGroup: MpGroup): Result<String> {
         try {
             mpGroupsCollection.document(mpGroup.id).set(mpGroup).await()
-            return Result.success(Unit)
+            return Result.success(mpGroup.id)
         } catch (e: Exception) {
             crashlytics.recordException(e)
             return Result.failure(e)

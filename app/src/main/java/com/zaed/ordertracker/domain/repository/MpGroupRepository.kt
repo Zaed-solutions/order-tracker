@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MpGroupRepository {
     suspend fun getMpGroups(): Flow<Result<List<MpGroup>>>
-    suspend fun saveMpGroup(mpGroup: MpGroup): Result<Unit>
+    suspend fun saveMpGroup(mpGroup: MpGroup): Result<String>
     suspend fun deleteMpGroup(mpGroupId: String): Result<Unit>
     suspend fun updateMpGroupBackgroundColor(groupId: String, color: String): Result<Unit>
     suspend fun getMpGroupById(groupId: String): Result<MpGroup>

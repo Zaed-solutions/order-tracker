@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface MpGroupRemoteSource {
     // MP Group management
     suspend fun getMpGroups(): Flow<Result<List<MpGroup>>>
-    suspend fun saveMpGroup(mpGroup: MpGroup): Result<Unit>
+    suspend fun saveMpGroup(mpGroup: MpGroup): Result<String>
     suspend fun deleteMpGroup(mpGroupId: String): Result<Unit>
     suspend fun getMpGroupById(groupId: String): Result<MpGroup>
     suspend fun addMasterPackageToGroup(groupId: String, masterPackageDto: MasterPackage): Result<Unit>
