@@ -114,7 +114,12 @@ class MasterPackageDetailsViewModel(
 
     private fun addNewShipment(shipment: Shipment) {
         viewModelScope.launch(Dispatchers.IO) {
-            addMasterPackageShipmentUseCase.invoke(shipment.copy(masterPackageId = uiState.value.masterPackage.id)).fold(
+            val updatedShipment = shipment.apply {
+                masterPackageId = uiState.value.masterPackage.id
+                flightId = uiState.value.masterPackage.flightId
+                masterPackageName = uiState.value.masterPackage.name
+            }
+            addMasterPackageShipmentUseCase.invoke(updatedShipment).fold(
                 onSuccess = {
                     Log.d(TAG, "${MasterPackageDetailsViewModel::addNewShipment.name}: success")
                 },

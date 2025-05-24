@@ -227,7 +227,10 @@ class FlightDetailsViewModel(
 
     private fun addShipment(shipment: Shipment) {
         viewModelScope.launch(Dispatchers.IO) {
-            createShipmentUseCase(shipment.copy(flightId = uiState.value.flightId))
+            val updatedShipment = shipment.apply {
+                flightId = uiState.value.flightId
+            }
+            createShipmentUseCase(updatedShipment)
                 .onSuccess {
                     Log.d(TAG, "addShipment: success")
                 }.onFailure {
