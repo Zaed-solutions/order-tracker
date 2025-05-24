@@ -98,26 +98,26 @@ class FlightDetailsViewModel(
             val sameMasterPackage = uiState.value.masterPackages.filter {
                 it.name.startsWith(namePrefix) && it.id != masterPackage.id
             }
+            val existingGroup = uiState.value.groups.find { it.name == namePrefix }
 
             val updatedMasterPackage = masterPackage.apply {
-                if (sameMasterPackage.isNotEmpty()) {
-                    // Check if a group with this prefix already exists
-                    val existingGroup = uiState.value.groups.find { it.name == namePrefix }
-                    val groupId = if (existingGroup != null) {
-                        // Use existing group
-                        existingGroup.id
-                    } else {
-                        // Create new group
+                if (sameMasterPackage.isNotEmpty() && existingGroup == null) {
+                    val groupId =
                         saveMpGroupUseCase.invoke(MpGroup(
                             name = namePrefix,
                             color = 0x00000
                         )).getOrElse { "" }
-                    }
+
                     this.groupId = groupId
                     flightId = uiState.value.flightId
-                    // Update other master packages with the same prefix to use the same group
                     sameMasterPackage.forEach { mp ->
                         updateMasterPackageUseCase(mp.copy(flightId = uiState.value.flightId, groupId = groupId))
+                    }
+                } else if(existingGroup != null) {
+                    this.groupId = existingGroup.id
+                    flightId = uiState.value.flightId
+                    sameMasterPackage.forEach { mp ->
+                        updateMasterPackageUseCase(mp.copy(flightId = uiState.value.flightId, groupId = existingGroup.id))
                     }
                 } else {
                     groupId = ""
