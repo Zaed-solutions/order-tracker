@@ -111,7 +111,7 @@ private fun LoginScreenContent(
                             modifier =
                                 Modifier
                                     .padding(start = 16.dp)
-                                    .heightIn(max = 64.dp),
+                                    .heightIn(max = 48.dp),
                         )
                     }
                     // username
