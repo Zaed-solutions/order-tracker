@@ -3,8 +3,6 @@ package com.zaed.ordertracker.ui.flights
 import com.zaed.ordertracker.domain.model.Flight
 
 sealed interface FlightsUiAction {
-    data object NavigateBack : FlightsUiAction
-
     data class AddFlight(
         val flight: Flight,
     ) : FlightsUiAction
@@ -20,4 +18,6 @@ sealed interface FlightsUiAction {
     data class NavigateToFlightDetails(
         val flightId: String,
     ) : FlightsUiAction
+    data object NavigateToSettings: FlightsUiAction
+    data object ResetError: FlightsUiAction
 }

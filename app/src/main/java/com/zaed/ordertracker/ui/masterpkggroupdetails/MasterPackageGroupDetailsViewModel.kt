@@ -5,14 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.ordertracker.domain.model.MasterPackage
 import com.zaed.ordertracker.domain.model.MpGroup
-import com.zaed.ordertracker.domain.usecase.AddMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.DeleteMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.EditMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.GetMpGroupWithMasterPackagesByIdUseCase
-import com.zaed.ordertracker.domain.usecase.SaveMpGroupUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.AddMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.DeleteMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.EditMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.GetMpGroupWithMasterPackagesByIdUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.SaveMpGroupUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MasterPackageGroupDetailsViewModel(
@@ -26,7 +27,12 @@ class MasterPackageGroupDetailsViewModel(
     private val _uiState = MutableStateFlow(MasterPackageGroupDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun init(groupId: String) {
+    fun init(
+        groupId: String,
+        flightId: String,
+    ) {
+        _uiState.update { it.copy(flightId = flightId) }
+        Log.d(TAG, "init: $groupId")
         fetchMasterPackageGroupWithMasterPackages(groupId)
     }
 
@@ -35,17 +41,18 @@ class MasterPackageGroupDetailsViewModel(
             getMpGroupWithMasterPackagesByIdUseCase(groupId).collect { result ->
                 result.fold(
                     onSuccess = { group ->
-                        _uiState.value = _uiState.value.copy(
-                            group = group,
-                            masterPackages = group.masterPackages
-                        )
+                        _uiState.value =
+                            _uiState.value.copy(
+                                group = group,
+                                masterPackages = group.masterPackages,
+                            )
                     },
                     onFailure = {
                         Log.d(
                             TAG,
-                            "${MasterPackageGroupDetailsViewModel::fetchMasterPackageGroupWithMasterPackages.name}: error: ${it.message}"
+                            "${MasterPackageGroupDetailsViewModel::fetchMasterPackageGroupWithMasterPackages.name}: error: ${it.message}",
                         )
-                    }
+                    },
                 )
             }
         }
@@ -67,16 +74,16 @@ class MasterPackageGroupDetailsViewModel(
                 onSuccess = {
                     Log.d(
                         TAG,
-                        "${MasterPackageGroupDetailsViewModel::updateGroup.name}: success"
+                        "${MasterPackageGroupDetailsViewModel::updateGroup.name}: success",
                     )
                     fetchMasterPackageGroupWithMasterPackages(group.id)
                 },
                 onFailure = {
                     Log.d(
                         TAG,
-                        "${MasterPackageGroupDetailsViewModel::updateGroup.name}: error: ${it.message}"
+                        "${MasterPackageGroupDetailsViewModel::updateGroup.name}: error: ${it.message}",
                     )
-                }
+                },
             )
         }
     }
@@ -87,16 +94,16 @@ class MasterPackageGroupDetailsViewModel(
                 onSuccess = {
                     Log.d(
                         TAG,
-                        "${MasterPackageGroupDetailsViewModel::updateMasterPackage.name}: success"
+                        "${MasterPackageGroupDetailsViewModel::updateMasterPackage.name}: success",
                     )
                     fetchMasterPackageGroupWithMasterPackages(_uiState.value.group.id)
                 },
                 onFailure = {
                     Log.d(
                         TAG,
-                        "${MasterPackageGroupDetailsViewModel::updateMasterPackage.name}: error: ${it.message}"
+                        "${MasterPackageGroupDetailsViewModel::updateMasterPackage.name}: error: ${it.message}",
                     )
-                }
+                },
             )
         }
     }
@@ -107,7 +114,7 @@ class MasterPackageGroupDetailsViewModel(
                 onSuccess = {
                     Log.d(
                         TAG,
-                        "${MasterPackageGroupDetailsViewModel::deleteMasterPackage.name}: success"
+                        "${MasterPackageGroupDetailsViewModel::deleteMasterPackage.name}: success",
                     )
                     // Refresh the group data to show updated master package list
                     fetchMasterPackageGroupWithMasterPackages(_uiState.value.group.id)
@@ -115,34 +122,37 @@ class MasterPackageGroupDetailsViewModel(
                 onFailure = {
                     Log.d(
                         TAG,
-                        "${MasterPackageGroupDetailsViewModel::deleteMasterPackage.name}: error: ${it.message}"
+                        "${MasterPackageGroupDetailsViewModel::deleteMasterPackage.name}: error: ${it.message}",
                     )
-                }
+                },
             )
         }
     }
 
     private fun addNewMasterPackage(masterPackage: MasterPackage) {
-        val updatedMasterPackages = masterPackage.apply {
-            val lastIndex = uiState.value.masterPackages.size
-            name = uiState.value.group.name + (lastIndex + 1)
-        }
+        val updatedMasterPackages =
+            masterPackage.apply {
+                flightId = uiState.value.flightId
+                groupId = _uiState.value.group.id
+            }
+        Log.d(TAG, "addNewMasterPackage: $updatedMasterPackages")
         viewModelScope.launch(Dispatchers.IO) {
-            addMasterPackageUseCase.invoke(updatedMasterPackages.copy(groupId = _uiState.value.group.id))
+            addMasterPackageUseCase
+                .invoke(updatedMasterPackages)
                 .fold(
                     onSuccess = {
                         Log.d(
                             TAG,
-                            "${MasterPackageGroupDetailsViewModel::addNewMasterPackage.name}: success"
+                            "${MasterPackageGroupDetailsViewModel::addNewMasterPackage.name}: success",
                         )
                         fetchMasterPackageGroupWithMasterPackages(_uiState.value.group.id)
                     },
                     onFailure = {
                         Log.d(
                             TAG,
-                            "${MasterPackageGroupDetailsViewModel::addNewMasterPackage.name}: error: ${it.message}"
+                            "${MasterPackageGroupDetailsViewModel::addNewMasterPackage.name}: error: ${it.message}",
                         )
-                    }
+                    },
                 )
         }
     }

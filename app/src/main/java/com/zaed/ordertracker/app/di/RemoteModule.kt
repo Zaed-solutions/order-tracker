@@ -9,6 +9,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSource
 import com.zaed.ordertracker.data.source.remote.AuthenticationRemoteSourceImpl
+import com.zaed.ordertracker.data.source.remote.DriveRemoteSource
+import com.zaed.ordertracker.data.source.remote.DriveRemoteSourceImpl
 import com.zaed.ordertracker.data.source.remote.ExportationFolderDataSource
 import com.zaed.ordertracker.data.source.remote.ExportationFolderDataSourceImpl
 import com.zaed.ordertracker.data.source.remote.FirebaseCredentialDataSource
@@ -78,5 +80,8 @@ val remoteModule =
         }
         singleOf(::FirebaseCredentialDataSourceImpl){
             bind<FirebaseCredentialDataSource>()
+        }
+        singleOf(::DriveRemoteSourceImpl){
+            bind<DriveRemoteSource>()
         }
     }

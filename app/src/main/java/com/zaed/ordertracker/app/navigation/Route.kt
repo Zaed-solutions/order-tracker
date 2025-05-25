@@ -22,6 +22,7 @@ sealed interface Route {
     @Serializable
     data class MasterPackageGroupDetailsRoute(
         val masterPackageGroupId: String,
+        val flightId: String
     ) : Route
 
     @Serializable

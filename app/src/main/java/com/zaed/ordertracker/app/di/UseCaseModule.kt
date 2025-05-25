@@ -1,15 +1,15 @@
 package com.zaed.ordertracker.app.di
 
-import com.zaed.ordertracker.domain.usecase.AddMasterPackageToGroupUseCase
-import com.zaed.ordertracker.domain.usecase.AddMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.DeleteMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.EditMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.ExportMasterPackagesUseCase
-import com.zaed.ordertracker.domain.usecase.GetMasterPackageWithShipmentsUseCase
-import com.zaed.ordertracker.domain.usecase.GetMasterPackagesByFlightIdUseCase
-import com.zaed.ordertracker.domain.usecase.GetMpGroupWithMasterPackagesByIdUseCase
-import com.zaed.ordertracker.domain.usecase.UpdateMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.UpdateMpGroupBackgroundColorUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.AddMasterPackageToGroupUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.AddMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.DeleteMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.EditMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.ExportMasterPackagesUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.GetMasterPackageWithShipmentsUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.GetMasterPackagesByFlightIdUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.GetMpGroupWithMasterPackagesByIdUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.UpdateMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.UpdateMpGroupBackgroundColorUseCase
 import com.zaed.ordertracker.domain.usecase.authentication.LoginUserUseCase
 import com.zaed.ordertracker.domain.usecase.flight.CreateFlightUseCase
 import com.zaed.ordertracker.domain.usecase.flight.DeleteFlightUseCase
@@ -19,17 +19,20 @@ import com.zaed.ordertracker.domain.usecase.shipment.CreateShipmentUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.DeleteShipmentUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.GetFlightShipmentsUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.UpdateShipmentUseCase
-import com.zaed.ordertracker.domain.usecase.DeleteMpGroupUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.DeleteMpGroupUseCase
 import com.zaed.ordertracker.domain.usecase.DeleteUserUseCase
 import com.zaed.ordertracker.domain.usecase.GetAllUsersUseCase
 import com.zaed.ordertracker.domain.usecase.GetExportFolderNameUseCase
 import com.zaed.ordertracker.domain.usecase.GetFirebaseCredentialUseCase
-import com.zaed.ordertracker.domain.usecase.GetMpGroupsUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.GetMpGroupsUseCase
 import com.zaed.ordertracker.domain.usecase.GetSignedInAccountUseCase
 import com.zaed.ordertracker.domain.usecase.LogOutUseCase
 import com.zaed.ordertracker.domain.usecase.SaveExportFolderNameUseCase
-import com.zaed.ordertracker.domain.usecase.SaveMpGroupUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.SaveMpGroupUseCase
 import com.zaed.ordertracker.domain.usecase.SaveUserUseCase
+import com.zaed.ordertracker.domain.usecase.UploadExcelSheetUseCase
+import com.zaed.ordertracker.domain.usecase.authentication.GetCurrentUserUseCase
+import com.zaed.ordertracker.domain.usecase.flight.GetFlightByIdUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -68,4 +71,8 @@ val useCaseModule =
         singleOf(::SaveExportFolderNameUseCase)
         singleOf(::SaveUserUseCase)
         singleOf(::SaveMpGroupUseCase)
+        singleOf(::GetFlightByIdUseCase)
+        singleOf(::GetCurrentUserUseCase)
+        singleOf(::GetFlightByIdUseCase)
+        singleOf(::UploadExcelSheetUseCase)
     }

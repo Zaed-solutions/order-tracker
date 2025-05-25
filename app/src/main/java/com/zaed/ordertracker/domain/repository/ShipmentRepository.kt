@@ -11,5 +11,8 @@ interface ShipmentRepository {
     suspend fun updateShipment(updatedShipment: Shipment): Result<Unit>
 
     suspend fun deleteShipment(shipmentId: String): Result<Unit>
+
     suspend fun getShipmentsByMasterPackageId(masterPackageId: String): Flow<Result<List<Shipment>>>
+
+    suspend fun updateFlightShipmentsExportedStatus(flightId: String): Result<Unit>
 }

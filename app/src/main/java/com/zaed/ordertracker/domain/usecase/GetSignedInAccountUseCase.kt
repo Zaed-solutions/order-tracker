@@ -6,5 +6,4 @@ class GetSignedInAccountUseCase(
     private val googleDriveRepository: GoogleDriveRepository
 ) {
     suspend operator fun invoke() = googleDriveRepository.getSignedInAccount()
-
 }

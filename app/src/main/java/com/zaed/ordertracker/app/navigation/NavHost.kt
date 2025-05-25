@@ -1,19 +1,17 @@
 package com.zaed.ordertracker.app.navigation
 
-import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.zaed.ordertracker.ui.flightdetails.FlightDetailsScreen
 import com.zaed.ordertracker.ui.flights.FlightsScreen
-import com.zaed.ordertracker.ui.home.FlightDetailsScreen
 import com.zaed.ordertracker.ui.login.LoginScreen
 import com.zaed.ordertracker.ui.masterpackagedetails.MasterPackageDetailsScreen
 import com.zaed.ordertracker.ui.masterpkggroupdetails.MasterPackageGroupDetailsScreen
@@ -24,11 +22,10 @@ fun NavigationHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
 ) {
-    val context = LocalContext.current
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.FlightsRoute,
+        startDestination = Route.LoginRoute,
         enterTransition = {
             fadeIn(
                 animationSpec =
@@ -61,8 +58,8 @@ fun NavigationHost(
         }
         composable<Route.FlightsRoute> {
             FlightsScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
+                onNavigateToSettings = {
+                    navController.navigate(Route.SettingsRoute)
                 },
                 onNavigateToFlightDetails = {
                     navController.navigate(Route.FlightDetailsRoute(it))
@@ -79,14 +76,22 @@ fun NavigationHost(
                 onNavigateToMasterPackageDetails = { masterPackageId ->
                     navController.navigate(Route.MasterPackageDetailsRoute(masterPackageId))
                 },
-                onNavigateToMasterPackageGroupDetails = { masterPackageGroupId ->
-                    navController.navigate(Route.MasterPackageGroupDetailsRoute(masterPackageGroupId))
-                }
+                onNavigateToMasterPackageGroupDetails = { masterPackageGroupId, flightId ->
+                    navController.navigate(Route.MasterPackageGroupDetailsRoute(masterPackageGroupId, flightId))
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Route.SettingsRoute) {
+                        popUpTo<Route.FlightsRoute> {
+                            inclusive = false
+                        }
+                    }
+                },
             )
         }
 
         composable<Route.MasterPackageDetailsRoute> { navBackStackEntry ->
-            val masterPackageId = navBackStackEntry.toRoute<Route.MasterPackageDetailsRoute>().masterPackageId
+            val masterPackageId =
+                navBackStackEntry.toRoute<Route.MasterPackageDetailsRoute>().masterPackageId
             MasterPackageDetailsScreen(
                 masterPackageId = masterPackageId,
                 onNavigateBack = {
@@ -96,8 +101,12 @@ fun NavigationHost(
         }
 
         composable<Route.MasterPackageGroupDetailsRoute> { navBackStackEntry ->
-            val masterPackageGroupId = navBackStackEntry.toRoute<Route.MasterPackageGroupDetailsRoute>().masterPackageGroupId
+            val masterPackageGroupId =
+                navBackStackEntry.toRoute<Route.MasterPackageGroupDetailsRoute>().masterPackageGroupId
+            val flightId =
+                navBackStackEntry.toRoute<Route.MasterPackageGroupDetailsRoute>().flightId
             MasterPackageGroupDetailsScreen(
+                flightId = flightId,
                 groupId = masterPackageGroupId,
                 onNavigateBack = {
                     navController.popBackStack()
@@ -105,11 +114,9 @@ fun NavigationHost(
             )
         }
         composable<Route.SettingsRoute> {
-            val context = LocalContext.current
             SettingsScreen(
                 onNavigateBack = {
-//                    TODO("Navigate back")
-                    Toast.makeText(context, "Navigate Back", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
                 },
             )
         }

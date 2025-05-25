@@ -8,7 +8,7 @@ data class MasterPackage(
     var groupId: String = "",
     val type: MasterPackageType = MasterPackageType.T,
     val weightKg: Double = 0.0,
-    val isExported: Boolean = false,
+    val exported: Boolean = false,
     val shipments: List<Shipment> = emptyList()
 ){
     val isPnd: Boolean

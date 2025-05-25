@@ -9,3 +9,5 @@ class InvalidPasswordException : InvalidCredentialsException("Password is invali
 class InvalidUsernameException : InvalidCredentialsException("Username is invalid")
 
 class UserNotFoundException : Exception("User not found")
+
+class FlightHasUnprocessedShipmentsException : Exception("Flight has unprocessed shipments")

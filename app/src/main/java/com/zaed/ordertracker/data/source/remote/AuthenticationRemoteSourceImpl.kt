@@ -33,4 +33,19 @@ class AuthenticationRemoteSourceImpl(
         } catch (e: Exception) {
             Result.failure(e)
         }
+
+    override suspend fun getUserById(userId: String): Result<User> =
+        try {
+            val user =
+                usersCollection
+                    .document(userId)
+                    .get()
+                    .await()
+                    .toObject(User::class.java)
+            user?.let {
+                Result.success(it)
+            } ?: Result.failure(UserNotFoundException())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
 }

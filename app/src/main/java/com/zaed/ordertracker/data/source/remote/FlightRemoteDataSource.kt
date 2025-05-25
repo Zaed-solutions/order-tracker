@@ -11,4 +11,6 @@ interface FlightRemoteDataSource {
     suspend fun updateFlight(flight: Flight): Result<Unit>
 
     suspend fun deleteFlight(id: String): Result<Unit>
+
+    suspend fun getFlightById(id: String): Result<Flight>
 }

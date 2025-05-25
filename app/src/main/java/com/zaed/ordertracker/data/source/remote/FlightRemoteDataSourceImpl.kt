@@ -9,6 +9,7 @@ import com.zaed.ordertracker.domain.model.Flight
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class FlightRemoteDataSourceImpl(
     firestore: FirebaseFirestore,
@@ -52,6 +53,20 @@ class FlightRemoteDataSourceImpl(
         try {
             flightCollection.document(id).delete()
             Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    override suspend fun getFlightById(id: String): Result<Flight> =
+        try {
+            val flightDto =
+                flightCollection
+                    .document(id)
+                    .get()
+                    .await()
+                    .toObject(FlightDto::class.java)
+                    ?: throw Exception("Flight not found")
+            Result.success(flightDto.toFlight())
         } catch (e: Exception) {
             Result.failure(e)
         }

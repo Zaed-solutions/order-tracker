@@ -22,8 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.zaed.ordertracker.R
 import com.zaed.ordertracker.domain.model.Shipment
-import com.zaed.ordertracker.ui.home.FlightDetailsUiAction
-import com.zaed.ordertracker.ui.home.components.ShipmentsScreenContent
+import com.zaed.ordertracker.ui.flightdetails.components.ShipmentsScreenContent
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
