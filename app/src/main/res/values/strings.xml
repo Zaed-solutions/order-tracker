@@ -35,4 +35,10 @@
     <string name="pcs">PCS</string>
     <string name="smno">SMNO</string>
     <string name="flight_details">Flight Details</string>
+    <string name="export_shipments">Export Shipments</string>
+    <string name="re_export_all_shipments">Re-export Shipments</string>
+    <string name="count">Count</string>
+    <string name="name">Name</string>
+    <string name="mp_kg">MP KG</string>
+    <string name="mp">MP</string>
 </resources>

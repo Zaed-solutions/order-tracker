@@ -1,6 +1,5 @@
-package com.zaed.ordertracker.ui.home.components
+package com.zaed.ordertracker.ui.flightdetails.components
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

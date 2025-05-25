@@ -7,4 +7,6 @@ interface AuthenticationRemoteSource {
         username: String,
         password: String,
     ): Result<User>
+
+    suspend fun getUserById(userId: String): Result<User>
 }

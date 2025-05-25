@@ -1,7 +1,7 @@
 package com.zaed.ordertracker.app.di
 
 import com.zaed.ordertracker.data.repository.AuthenticationRepositoryImpl
-import com.zaed.ordertracker.data.repository.ExportationFolderRepositoryImpl
+import com.zaed.ordertracker.data.repository.FileExportRepositoryImpl
 import com.zaed.ordertracker.data.repository.FirebaseCredentialRepositoryImpl
 import com.zaed.ordertracker.data.repository.FlightRepositoryImpl
 import com.zaed.ordertracker.data.repository.GoogleDriveRepositoryImpl
@@ -11,7 +11,7 @@ import com.zaed.ordertracker.data.repository.UserRepositoryImpl
 import com.zaed.ordertracker.data.source.remote.GoogleAuth
 import com.zaed.ordertracker.data.source.remote.GoogleAuthImpl
 import com.zaed.ordertracker.domain.repository.AuthenticationRepository
-import com.zaed.ordertracker.domain.repository.ExportationFolderRepository
+import com.zaed.ordertracker.domain.repository.FileExportRepository
 import com.zaed.ordertracker.domain.repository.FirebaseCredentialRepository
 import com.zaed.ordertracker.domain.repository.FlightRepository
 import com.zaed.ordertracker.domain.repository.GoogleDriveRepository
@@ -28,7 +28,7 @@ val repositoryModule =
         singleOf(::FlightRepositoryImpl) { bind<FlightRepository>() }
         singleOf(::ShipmentRepositoryImpl) { bind<ShipmentRepository>() }
         singleOf(::MpGroupRepositoryImpl) { bind<MpGroupRepository>() }
-        singleOf(::ExportationFolderRepositoryImpl) { bind<ExportationFolderRepository>() }
+        singleOf(::FileExportRepositoryImpl) { bind<FileExportRepository>() }
         singleOf(::MpGroupRepositoryImpl) { bind<MpGroupRepository>() }
         singleOf(::UserRepositoryImpl) { bind<UserRepository>() }
         singleOf(::FirebaseCredentialRepositoryImpl) { bind<FirebaseCredentialRepository>() }

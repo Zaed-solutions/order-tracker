@@ -1,14 +1,18 @@
-package com.zaed.ordertracker.ui.home
+package com.zaed.ordertracker.ui.flightdetails
 
-import android.graphics.Color
 import com.zaed.ordertracker.domain.model.MasterPackage
 import com.zaed.ordertracker.domain.model.MpGroup
 import com.zaed.ordertracker.domain.model.Shipment
+import java.io.File
 
 sealed interface FlightDetailsUiAction {
     data class AddShipment(
         val shipment: Shipment,
     ) : FlightDetailsUiAction
+
+    data object ExportShipments : FlightDetailsUiAction
+
+    data object ReExportAllShipments : FlightDetailsUiAction
 
     data class UpdateShipment(
         val updatedShipment: Shipment,
@@ -19,6 +23,10 @@ sealed interface FlightDetailsUiAction {
     ) : FlightDetailsUiAction
 
     data object NavigateBack : FlightDetailsUiAction
+
+    data class UploadExportedShipments(
+        val excelSheet: File,
+    ) : FlightDetailsUiAction
 
     data class AddNewMasterPackage(
         val masterPackage: MasterPackage,
@@ -31,6 +39,7 @@ sealed interface FlightDetailsUiAction {
     data class EditMasterPackage(
         val masterPackage: MasterPackage,
     ) : FlightDetailsUiAction
+
     data class OnMasterPackageClicked(
         val masterPackage: MasterPackage,
     ) : FlightDetailsUiAction

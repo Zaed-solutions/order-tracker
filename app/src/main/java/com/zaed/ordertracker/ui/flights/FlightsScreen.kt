@@ -3,8 +3,8 @@ package com.zaed.ordertracker.ui.flights
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -32,7 +32,7 @@ import org.koin.androidx.compose.koinViewModel
 fun FlightsScreen(
     modifier: Modifier = Modifier,
     viewModel: FlightsViewModel = koinViewModel(),
-    onNavigateBack: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     onNavigateToFlightDetails: (String) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -40,7 +40,7 @@ fun FlightsScreen(
         state = state,
         onAction = { action ->
             when (action) {
-                FlightsUiAction.NavigateBack -> onNavigateBack()
+                FlightsUiAction.NavigateToSettings -> onNavigateToSettings()
                 is FlightsUiAction.NavigateToFlightDetails -> onNavigateToFlightDetails(action.flightId)
                 else -> {
                     viewModel.handleAction(action)
@@ -75,14 +75,14 @@ fun FlightsScreenContent(
                         style = MaterialTheme.typography.titleLarge,
                     )
                 },
-                navigationIcon = {
+                actions = {
                     IconButton(
                         onClick = {
-                            onAction(FlightsUiAction.NavigateBack)
+                            onAction(FlightsUiAction.NavigateToSettings)
                         },
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.Default.Settings,
                             contentDescription = null,
                         )
                     }

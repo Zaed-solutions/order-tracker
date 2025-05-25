@@ -82,23 +82,43 @@ fun SettingsScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    //todo: nothing happens after selecting google account
     val startForResult =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            Log.d("SettingsScreen", "ActivityResult received - ResultCode: ${result.resultCode}")
+            Log.d("SettingsScreen", "RESULT_OK constant: ${Activity.RESULT_OK}")
+
             if (result.resultCode == Activity.RESULT_OK) {
+                Log.d("SettingsScreen", "Result OK - processing intent")
                 val intent = result.data
+                Log.d("SettingsScreen", "Intent data: $intent")
+
                 if (intent != null) {
+                    Log.d("SettingsScreen", "Intent not null - getting account")
                     val task: Task<GoogleSignInAccount> =
                         GoogleSignIn.getSignedInAccountFromIntent(intent)
+
+                    task.addOnCompleteListener { completedTask ->
+                        Log.d("SettingsScreen", "Task completed - Success: ${completedTask.isSuccessful}")
+                        if (completedTask.isSuccessful) {
+                            val account = completedTask.result
+                            Log.d("SettingsScreen", "Account retrieved: ${account?.email}")
+                        } else {
+                            Log.e("SettingsScreen", "Task failed", completedTask.exception)
+                        }
+                    }
+
                     task.addOnSuccessListener { account ->
                         Log.d("SettingsScreen", "onActivityResult: $account")
+                        Toast.makeText(context, "Google Sign-in Success", Toast.LENGTH_LONG).show()
                         viewModel.getSignedInAccount()
+                    }.addOnFailureListener { e ->
+                        Log.e("SettingsScreen", "onActivityResult: Failed to get account", e)
+                        Toast.makeText(context, context.getString(R.string.google_login_error), Toast.LENGTH_LONG).show()
                     }
-                } else {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.google_login_error), Toast.LENGTH_LONG
-                    ).show()
                 }
+            } else {
+                Log.d("SettingsScreen", "Result not OK - ResultCode: ${result.resultCode}")
             }
         }
     SettingScreenContent(

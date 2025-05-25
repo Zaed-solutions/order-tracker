@@ -1,5 +1,6 @@
-package com.zaed.ordertracker.ui.home
+package com.zaed.ordertracker.ui.flightdetails
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +40,11 @@ import com.zaed.ordertracker.domain.model.MasterPackage
 import com.zaed.ordertracker.domain.model.MasterPackageType
 import com.zaed.ordertracker.domain.model.MpGroup
 import com.zaed.ordertracker.ui.components.MasterPackageScreenContent
-import com.zaed.ordertracker.ui.home.components.ShipmentsScreenContent
+import com.zaed.ordertracker.ui.components.MoreDropDownMenu
+import com.zaed.ordertracker.ui.components.MoreDropdownItem
+import com.zaed.ordertracker.ui.flightdetails.components.ShipmentsScreenContent
+import com.zaed.ordertracker.ui.util.exportShipmentsAsExcel
+import com.zaed.ordertracker.ui.util.toRows
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -51,6 +58,7 @@ fun FlightDetailsScreen(
     onNavigateToMasterPackageGroupDetails: (String) -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     LaunchedEffect(true) {
         viewModel.init(flightId)
     }
@@ -63,9 +71,34 @@ fun FlightDetailsScreen(
                 is FlightDetailsUiAction.OnMasterPackageClicked -> {
                     onNavigateToMasterPackageDetails(action.masterPackage.id)
                 }
+
                 is FlightDetailsUiAction.OnMasterPackageGroupClicked -> {
                     onNavigateToMasterPackageGroupDetails(action.group.id)
                 }
+                FlightDetailsUiAction.ExportShipments, FlightDetailsUiAction.ReExportAllShipments -> {
+                    state.allShipments.toRows().exportShipmentsAsExcel(
+                        context = context,
+                        flightNumber = state.flight.name,
+                        headers = listOf(
+                            context.getString(R.string.count),
+                            context.getString(R.string.name),
+                            context.getString(R.string.date),
+                            "\t",
+                            context.getString(R.string.time),
+                            context.getString(R.string.t_b),
+                            context.getString(R.string.smno),
+                            context.getString(R.string.pcs),
+                            context.getString(R.string.kg),
+                            context.getString(R.string.mp_kg),
+                            context.getString(R.string.mp),
+                        ),
+                    )?.let {
+                        viewModel.handleAction(FlightDetailsUiAction.UploadExportedShipments(it))
+                    }?:{
+                        Log.e("FlightDetailsScreen", "Failed to export shipments file is null")
+                    }
+                }
+
                 else -> viewModel.handleAction(action)
             }
         },
@@ -87,8 +120,8 @@ private fun FlightDetailsScreenContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.flight_details),
-                        style = MaterialTheme.typography.titleLarge
+                        text = state.flight.name,
+                        style = MaterialTheme.typography.titleLarge,
                     )
                 },
                 navigationIcon = {
@@ -99,14 +132,45 @@ private fun FlightDetailsScreenContent(
                         )
                     }
                 },
+                actions = {
+                    MoreDropDownMenu(
+                        modifier = Modifier.padding(end = 8.dp),
+                        items =
+                            buildList {
+                                add(
+                                    MoreDropdownItem(
+                                        title = stringResource(R.string.export_shipments),
+                                        onClick = {
+                                            onAction(FlightDetailsUiAction.ExportShipments)
+                                        },
+                                        icon = Icons.Default.Upload,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                    ),
+                                )
+
+                                if (state.currentUser.admin) {
+                                    add(
+                                        MoreDropdownItem(
+                                            title = stringResource(R.string.re_export_all_shipments),
+                                            onClick = {
+                                                onAction(FlightDetailsUiAction.ReExportAllShipments)
+                                            },
+                                            icon = Icons.Default.Upload, // Consider if this icon should be different
+                                            tint = MaterialTheme.colorScheme.primary,
+                                        ),
+                                    )
+                                }
+                            },
+                    )
+                },
             )
         },
     ) { innerPadding ->
         Column(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
         ) {
             PrimaryTabRow(
                 modifier = Modifier.padding(top = 16.dp),
@@ -114,18 +178,17 @@ private fun FlightDetailsScreenContent(
                 indicator = {
                     TabRowDefaults.PrimaryIndicator(
                         modifier =
-                        Modifier
-                            .run {
-                                if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
-                                    scale(
-                                        -1f,
-                                        1f,
-                                    )
-                                } else {
-                                    this
-                                }
-                            }
-                            .tabIndicatorOffset(pagerState.currentPage, true),
+                            Modifier
+                                .run {
+                                    if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
+                                        scale(
+                                            -1f,
+                                            1f,
+                                        )
+                                    } else {
+                                        this
+                                    }
+                                }.tabIndicatorOffset(pagerState.currentPage, true),
                         width = Dp.Unspecified,
                     )
                 },
@@ -154,7 +217,7 @@ private fun FlightDetailsScreenContent(
                 when (value) {
                     HomeTabs.SHIPMENTS.ordinal -> {
                         ShipmentsScreenContent(
-                            shipments = state.shipments,
+                            shipments = state.allShipments,
                             onAddShipment = { shipment ->
                                 onAction(FlightDetailsUiAction.AddShipment(shipment))
                             },
@@ -173,8 +236,8 @@ private fun FlightDetailsScreenContent(
                             modifier = Modifier.fillMaxSize(),
                             masterPackages = state.masterPackages,
                             masterPackageGroup = state.groups,
-                            onEditMasterPackageGroup = {/*TODO*/ },
-                            onDeleteMasterPackageGroup = {/*TODO*/},
+                            onEditMasterPackageGroup = { /*TODO*/ },
+                            onDeleteMasterPackageGroup = { /*TODO*/ },
                             onDeleteMasterPackage = {
                                 onAction(FlightDetailsUiAction.DeleteMasterPackage(it.id))
                             },
@@ -182,7 +245,7 @@ private fun FlightDetailsScreenContent(
                                 onAction(FlightDetailsUiAction.EditMasterPackage(it))
                             },
                             onAddNewMasterPackage = {
-                             onAction(FlightDetailsUiAction.AddNewMasterPackage(it))
+                                onAction(FlightDetailsUiAction.AddNewMasterPackage(it))
                             },
                             onMasterPackageClicked = {
                                 onAction(FlightDetailsUiAction.OnMasterPackageClicked(it))
@@ -190,7 +253,7 @@ private fun FlightDetailsScreenContent(
                             onMasterPackageGroupClicked = {
                                 onAction(FlightDetailsUiAction.OnMasterPackageGroupClicked(it))
                             },
-                            windowWidthSizeClass = windowWidthSizeClass
+                            windowWidthSizeClass = windowWidthSizeClass,
                         )
                     }
                 }
@@ -214,28 +277,31 @@ enum class HomeTabs(
 @Composable
 private fun HomePreview() {
     FlightDetailsScreenContent(
-        state = FlightDetailsUiState(
-            groups = listOf(
-                MpGroup(
-                    id = "1",
-                    name = "Group",
-                    color = 0xFF2196F3.toInt(),
-                    masterPackages = listOf(
-                        MasterPackage(
+        state =
+            FlightDetailsUiState(
+                groups =
+                    listOf(
+                        MpGroup(
                             id = "1",
-                            name = "MP1",
-                            count = 10,
-                            type = MasterPackageType.T,
+                            name = "Group",
+                            color = 0xFF2196F3.toInt(),
+                            masterPackages =
+                                listOf(
+                                    MasterPackage(
+                                        id = "1",
+                                        name = "MP1",
+                                        count = 10,
+                                        type = MasterPackageType.T,
+                                    ),
+                                    MasterPackage(
+                                        id = "2",
+                                        name = "MP2",
+                                        count = 20,
+                                        type = MasterPackageType.T,
+                                    ),
+                                ),
                         ),
-                        MasterPackage(
-                            id = "2",
-                            name = "MP2",
-                            count = 20,
-                            type = MasterPackageType.T,
-                        )
-                    )
-                )
-            )
-        ),
+                    ),
+            ),
     ) { }
 }

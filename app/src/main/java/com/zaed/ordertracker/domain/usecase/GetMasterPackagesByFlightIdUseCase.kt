@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class GetMasterPackagesByFlightIdUseCase(
     private val repository: MpGroupRepository
 ) {
-     operator fun invoke(flightId: String): Flow<Result<List<MasterPackage>>> {
+     operator suspend fun invoke(flightId: String): Flow<Result<List<MasterPackage>>> {
         return repository.getMasterPackagesByFlightId(flightId)
     }
 }

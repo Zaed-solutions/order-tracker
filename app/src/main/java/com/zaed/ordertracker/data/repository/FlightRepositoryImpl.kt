@@ -14,4 +14,5 @@ class FlightRepositoryImpl(
     override suspend fun updateFlight(flight: Flight) = flightRemoteDataSource.updateFlight(flight)
 
     override suspend fun deleteFlight(id: String) = flightRemoteDataSource.deleteFlight(id)
+    override suspend fun getFlightById(id: String) = flightRemoteDataSource.getFlightById(id)
 }

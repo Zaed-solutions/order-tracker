@@ -1,4 +1,4 @@
-package com.zaed.ordertracker.ui.home.components
+package com.zaed.ordertracker.ui.flightdetails.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding

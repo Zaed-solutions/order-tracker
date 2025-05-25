@@ -7,12 +7,14 @@ import com.zaed.ordertracker.domain.model.MasterPackage
 import com.zaed.ordertracker.domain.model.Shipment
 import com.zaed.ordertracker.domain.usecase.EditMasterPackageUseCase
 import com.zaed.ordertracker.domain.usecase.GetMasterPackageWithShipmentsUseCase
+import com.zaed.ordertracker.domain.usecase.authentication.GetCurrentUserUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.CreateShipmentUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.DeleteShipmentUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.UpdateShipmentUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MasterPackageDetailsViewModel(
@@ -21,12 +23,27 @@ class MasterPackageDetailsViewModel(
     private val editMasterPackageShipmentUseCase: UpdateShipmentUseCase,
     private val editMasterPackageUseCase: EditMasterPackageUseCase,
     private val deleteMasterPackageShipmentUseCase: DeleteShipmentUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
 ) : ViewModel() {
     private val TAG = "MasterPackageDetailsViewModel"
     private val _uiState = MutableStateFlow(MasterPackageDetailsUiState())
     val uiState = _uiState.asStateFlow()
     fun init(masterPackageId: String) {
+        fetchCurrentUser()
         fetchMasterPackageWithShipments(masterPackageId)
+    }
+
+    private fun fetchCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getCurrentUserUseCase()
+                .onSuccess { user ->
+                    _uiState.update { oldState ->
+                        oldState.copy(currentUser = user)
+                    }
+                }.onFailure {
+                    Log.e(TAG, "fetchCurrentUser: ", it)
+                }
+        }
     }
 
     private fun fetchMasterPackageWithShipments(masterPackageId: String) {
@@ -38,7 +55,10 @@ class MasterPackageDetailsViewModel(
                             TAG,
                             "${MasterPackageDetailsViewModel::fetchMasterPackageWithShipments.name}: ${masterPackage.shipments.size}"
                         )
-                        _uiState.value = _uiState.value.copy(masterPackage = masterPackage,shipments = masterPackage.shipments)
+                        _uiState.value = _uiState.value.copy(
+                            masterPackage = masterPackage,
+                            shipments = masterPackage.shipments
+                        )
                     },
                     onFailure = {
                         Log.d(
@@ -114,11 +134,13 @@ class MasterPackageDetailsViewModel(
 
     private fun addNewShipment(shipment: Shipment) {
         viewModelScope.launch(Dispatchers.IO) {
-            val updatedShipment = shipment.apply {
-                masterPackageId = uiState.value.masterPackage.id
-                flightId = uiState.value.masterPackage.flightId
-                masterPackageName = uiState.value.masterPackage.name
-            }
+            val updatedShipment = shipment.copy(
+                masterPackageId = uiState.value.masterPackage.id,
+                flightId = uiState.value.masterPackage.flightId,
+                masterPackageName = uiState.value.masterPackage.name,
+                addedById = uiState.value.currentUser.id,
+                addedByName = uiState.value.currentUser.username,
+            )
             addMasterPackageShipmentUseCase.invoke(updatedShipment).fold(
                 onSuccess = {
                     Log.d(TAG, "${MasterPackageDetailsViewModel::addNewShipment.name}: success")

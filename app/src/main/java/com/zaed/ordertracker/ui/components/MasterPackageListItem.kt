@@ -1,6 +1,5 @@
 package com.zaed.ordertracker.ui.components
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,7 +34,6 @@ import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.WebStories
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material.icons.outlined.WebStories
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -766,7 +763,7 @@ fun MasterPackageListItem(
         ) {
             //STATUS ICON
             Icon(
-                imageVector = if (masterPackage.isExported) Icons.Filled.Circle else Icons.Outlined.Circle,
+                imageVector = if (masterPackage.exported) Icons.Filled.Circle else Icons.Outlined.Circle,
                 contentDescription = "MP Status",
                 modifier = Modifier
                     .weight(1f)
@@ -1039,9 +1036,9 @@ fun CompactMasterPackageListItem(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Icon(
-                        imageVector = if (masterPackage.isExported) Icons.Filled.Circle else Icons.Outlined.Circle,
+                        imageVector = if (masterPackage.exported) Icons.Filled.Circle else Icons.Outlined.Circle,
                         contentDescription = "Status",
-                        tint = if (masterPackage.isExported) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                        tint = if (masterPackage.exported) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                         modifier = Modifier.size(12.dp)
                     )
 
@@ -1296,9 +1293,9 @@ fun CompactMasterPackageGroupListItem(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
                                 Icon(
-                                    imageVector = if (mp.isExported) Icons.Filled.Circle else Icons.Outlined.Circle,
+                                    imageVector = if (mp.exported) Icons.Filled.Circle else Icons.Outlined.Circle,
                                     contentDescription = null,
-                                    tint = if (mp.isExported) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                                    tint = if (mp.exported) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
                                     modifier = Modifier.size(8.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
@@ -1513,7 +1510,7 @@ private fun MpItemPreview() {
                             name = "MP1",
                             count = 10,
                             type = MasterPackageType.T,
-                            isExported = true
+                            exported = true
                         ),
                         MasterPackage(
                             id = "2",

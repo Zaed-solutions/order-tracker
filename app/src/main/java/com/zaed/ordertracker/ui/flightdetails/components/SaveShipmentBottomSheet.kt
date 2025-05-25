@@ -1,4 +1,4 @@
-package com.zaed.ordertracker.ui.home.components
+package com.zaed.ordertracker.ui.flightdetails.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement

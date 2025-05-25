@@ -13,7 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.ordertracker.ui.flights.FlightsScreen
-import com.zaed.ordertracker.ui.home.FlightDetailsScreen
+import com.zaed.ordertracker.ui.flightdetails.FlightDetailsScreen
 import com.zaed.ordertracker.ui.login.LoginScreen
 import com.zaed.ordertracker.ui.masterpackagedetails.MasterPackageDetailsScreen
 import com.zaed.ordertracker.ui.masterpkggroupdetails.MasterPackageGroupDetailsScreen
@@ -28,7 +28,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.FlightsRoute,
+        startDestination = Route.LoginRoute,
         enterTransition = {
             fadeIn(
                 animationSpec =
@@ -61,8 +61,8 @@ fun NavigationHost(
         }
         composable<Route.FlightsRoute> {
             FlightsScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
+                onNavigateToSettings = {
+                    navController.navigate(Route.SettingsRoute)
                 },
                 onNavigateToFlightDetails = {
                     navController.navigate(Route.FlightDetailsRoute(it))
@@ -105,11 +105,9 @@ fun NavigationHost(
             )
         }
         composable<Route.SettingsRoute> {
-            val context = LocalContext.current
             SettingsScreen(
                 onNavigateBack = {
-//                    TODO("Navigate back")
-                    Toast.makeText(context, "Navigate Back", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
                 },
             )
         }
