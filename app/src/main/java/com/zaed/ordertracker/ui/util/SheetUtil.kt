@@ -33,7 +33,7 @@ fun List<Shipment>.toRows(): List<ShipmentRow> =
             shipmentNumber = shipment.shipmentNumber,
             shipmentQuantity = shipment.quantity.toString(),
             shipmentWeight = shipment.weight.toString(),
-            masterPackageWeight = shipment.masterPackageWeight.let { if (it == 0.0) "" else it.toString() },
+            masterPackageWeight = shipment.masterPackageWeight.let { if (shipment.masterPackageName.isBlank()) "" else it.toString() },
             masterPackage = shipment.masterPackageName,
         )
     }

@@ -10,6 +10,10 @@ sealed interface FlightDetailsUiAction {
         val shipment: Shipment,
     ) : FlightDetailsUiAction
 
+    data object ResetNeedToLogin : FlightDetailsUiAction
+
+    data object NavigateToSettings : FlightDetailsUiAction
+
     data object ExportShipments : FlightDetailsUiAction
 
     data object ReExportAllShipments : FlightDetailsUiAction
@@ -27,6 +31,8 @@ sealed interface FlightDetailsUiAction {
     data class UploadExportedShipments(
         val excelSheet: File,
     ) : FlightDetailsUiAction
+
+    data object ResetSnackbarMessage : FlightDetailsUiAction
 
     data class AddNewMasterPackage(
         val masterPackage: MasterPackage,

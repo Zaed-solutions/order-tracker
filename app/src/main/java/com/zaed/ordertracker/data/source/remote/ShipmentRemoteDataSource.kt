@@ -15,6 +15,7 @@ interface ShipmentRemoteDataSource {
     suspend fun getShipmentsByMasterPackageId(masterPackageId: String): Flow<Result<List<Shipment>>>
 
     suspend fun doesMasterPackageHaveUnExportedShipments(id: String): Result<Boolean>
+    suspend fun doesFlightHaveUnExportedShipments(id: String): Result<Boolean>
 
     suspend fun updateFlightShipmentsExportedStatus(flightId: String): Result<Unit>
 }

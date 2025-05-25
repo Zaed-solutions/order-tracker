@@ -19,4 +19,5 @@ sealed interface FlightsUiAction {
         val flightId: String,
     ) : FlightsUiAction
     data object NavigateToSettings: FlightsUiAction
+    data object ResetError: FlightsUiAction
 }

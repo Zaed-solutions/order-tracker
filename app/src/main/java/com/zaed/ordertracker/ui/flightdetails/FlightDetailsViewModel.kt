@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.ordertracker.domain.model.MasterPackage
 import com.zaed.ordertracker.domain.model.MpGroup
 import com.zaed.ordertracker.domain.model.Shipment
+import com.zaed.ordertracker.domain.usecase.UploadExcelSheetUseCase
+import com.zaed.ordertracker.domain.usecase.authentication.GetCurrentUserUseCase
+import com.zaed.ordertracker.domain.usecase.flight.GetFlightByIdUseCase
 import com.zaed.ordertracker.domain.usecase.masterpackage.AddMasterPackageUseCase
 import com.zaed.ordertracker.domain.usecase.masterpackage.DeleteMasterPackageUseCase
 import com.zaed.ordertracker.domain.usecase.masterpackage.ExportMasterPackagesUseCase
@@ -13,13 +16,11 @@ import com.zaed.ordertracker.domain.usecase.masterpackage.GetMasterPackagesByFli
 import com.zaed.ordertracker.domain.usecase.masterpackage.GetMpGroupsUseCase
 import com.zaed.ordertracker.domain.usecase.masterpackage.SaveMpGroupUseCase
 import com.zaed.ordertracker.domain.usecase.masterpackage.UpdateMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.UploadExcelSheetUseCase
-import com.zaed.ordertracker.domain.usecase.authentication.GetCurrentUserUseCase
-import com.zaed.ordertracker.domain.usecase.flight.GetFlightByIdUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.CreateShipmentUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.DeleteShipmentUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.GetFlightShipmentsUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.UpdateShipmentUseCase
+import com.zaed.ordertracker.domain.utils.UserNotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,7 +42,7 @@ class FlightDetailsViewModel(
     private val deleteMasterPackageUseCase: DeleteMasterPackageUseCase,
     private val saveMpGroupUseCase: SaveMpGroupUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val uploadExcelSheetUseCase: UploadExcelSheetUseCase
+    private val uploadExcelSheetUseCase: UploadExcelSheetUseCase,
 ) : ViewModel() {
     private val TAG: String = "HomeViewModel"
     private val _uiState = MutableStateFlow(FlightDetailsUiState())
@@ -52,7 +53,7 @@ class FlightDetailsViewModel(
         fetchCurrentUser()
         fetchFlight(flightId)
         fetchShipments(flightId)
-        fetchMasterPackages()
+        fetchMasterPackages(flightId)
         fetchGroups()
     }
 
@@ -98,9 +99,9 @@ class FlightDetailsViewModel(
         }
     }
 
-    private fun fetchMasterPackages() {
+    private fun fetchMasterPackages(flightId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            getMasterPackagesByFlightIdUseCase(uiState.value.flight.id).collect { result ->
+            getMasterPackagesByFlightIdUseCase(flightId).collect { result ->
                 result
                     .onSuccess { masterPackages ->
                         _uiState.update { oldState ->
@@ -219,6 +220,16 @@ class FlightDetailsViewModel(
             is FlightDetailsUiAction.DeleteMasterPackage -> deleteMasterPackage(action.masterPackageId)
             is FlightDetailsUiAction.EditMasterPackage -> editMasterPackage(action.masterPackage)
             is FlightDetailsUiAction.UploadExportedShipments -> uploadExportedShipments(action.excelSheet)
+            FlightDetailsUiAction.ResetNeedToLogin ->
+                _uiState.update { oldState ->
+                    oldState.copy(needToLogin = false)
+                }
+
+            FlightDetailsUiAction.ResetSnackbarMessage ->
+                _uiState.update { oldState ->
+                    oldState.copy(snackbarMessage = null)
+                }
+
             else -> Unit
         }
     }
@@ -227,12 +238,21 @@ class FlightDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             uploadExcelSheetUseCase(
                 flightId = uiState.value.flight.id,
-                file = excelSheet
+                file = excelSheet,
             ).onSuccess {
-                Log.d(TAG, "uploadExportedShipments: success $it")
+                _uiState.update { oldState ->
+                    oldState.copy(snackbarMessage = "Exported shipments uploaded successfully")
+                }
             }.onFailure {
-                //todo if user not found error display navigate to settings exception
-                Log.e(TAG, "uploadExportedShipments: failure", it)
+                if (it is UserNotFoundException) {
+                    _uiState.update { oldState ->
+                        oldState.copy(needToLogin = true)
+                    }
+                } else {
+                    _uiState.update { oldState ->
+                        oldState.copy(snackbarMessage = "Failed to upload exported shipments")
+                    }
+                }
             }
         }
     }

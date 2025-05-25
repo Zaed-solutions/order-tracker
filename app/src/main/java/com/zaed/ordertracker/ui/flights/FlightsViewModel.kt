@@ -8,6 +8,7 @@ import com.zaed.ordertracker.domain.usecase.flight.CreateFlightUseCase
 import com.zaed.ordertracker.domain.usecase.flight.DeleteFlightUseCase
 import com.zaed.ordertracker.domain.usecase.flight.GetAllFlightsUseCase
 import com.zaed.ordertracker.domain.usecase.flight.UpdateFlightUseCase
+import com.zaed.ordertracker.domain.utils.FlightHasUnprocessedShipmentsException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,6 +52,7 @@ class FlightsViewModel(
             is FlightsUiAction.AddFlight -> addFlight(action.flight)
             is FlightsUiAction.DeleteFlight -> deleteFlight(action.flightId)
             is FlightsUiAction.EditFlight -> updateFlight(action.updatedFlight)
+            FlightsUiAction.ResetError -> _uiState.update { it.copy(error = null) }
             else -> Unit
         }
     }
@@ -81,6 +83,11 @@ class FlightsViewModel(
                         oldState.copy(isLoading = false)
                     }
                 }.onFailure {
+                    if(it is FlightHasUnprocessedShipmentsException){
+                        _uiState.update { oldState ->
+                            oldState.copy(error = "Flight has unprocessed shipments")
+                        }
+                    }
                     _uiState.update { oldState ->
                         oldState.copy(isLoading = false)
                     }

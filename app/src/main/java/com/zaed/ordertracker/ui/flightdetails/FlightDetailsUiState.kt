@@ -15,5 +15,6 @@ data class FlightDetailsUiState(
     val masterPackages: List<MasterPackage> = emptyList(),
     val groups: List<MpGroup> = emptyList(),
     val selectedGroupId: String? = null,
-    val error: String? = null
+    val snackbarMessage: String? = null,
+    val needToLogin: Boolean = false,
 )

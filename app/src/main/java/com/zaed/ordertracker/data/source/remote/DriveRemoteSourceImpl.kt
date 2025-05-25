@@ -55,6 +55,9 @@ class DriveRemoteSourceImpl(
                     trySend(Result.failure(Exception("Failed to create or find folder: $folderName")))
                 }
 
+                // Delete existing file with the same name in the folder
+                deleteExistingFile(driveService, file.name, folderId)
+
                 // Create file metadata
                 val fileMetadata =
                     com.google.api.services.drive.model.File().apply {
@@ -89,6 +92,34 @@ class DriveRemoteSourceImpl(
             awaitClose { }
         }
 
+    private fun deleteExistingFile(driveService: Drive, filename: String, folderId: String) {
+        try {
+            // Search for files with the same name in the specific folder
+            val query = "name = '$filename' and '$folderId' in parents and trashed = false"
+            val existingFiles =
+                driveService
+                    .files()
+                    .list()
+                    .setQ(query)
+                    .setFields("files(id, name)")
+                    .execute()
+                    .files
+
+            // Delete each existing file with the same name
+            existingFiles.forEach { existingFile ->
+                driveService.files().delete(existingFile.id).execute()
+                Log.d("FILE_DELETED", "Deleted existing file: ${existingFile.name} (ID: ${existingFile.id})")
+            }
+
+            if (existingFiles.isNotEmpty()) {
+                Log.d("FILE_CLEANUP", "Removed ${existingFiles.size} existing file(s) with name: $filename")
+            }
+        } catch (e: Exception) {
+            Log.w("DELETE_WARNING", "Failed to delete existing file '$filename': ${e.message}", e)
+            // Continue with upload even if deletion fails
+        }
+    }
+
     private fun findOrCreateFolder(
         account: GoogleSignInAccount,
         folderName: String,
@@ -97,7 +128,7 @@ class DriveRemoteSourceImpl(
             val driveService = createDriveService(account)
 
             // First, check if folder exists
-            val query = "name = '$folderName' and mimeType = 'application/vnd.google-apps.folder'"
+            val query = "name = '$folderName' and mimeType = 'application/vnd.google-apps.folder' and trashed = false"
             val existingFolders =
                 driveService
                     .files()

@@ -35,12 +35,13 @@ import org.koin.androidx.compose.koinViewModel
 fun MasterPackageGroupDetailsScreen(
     modifier: Modifier = Modifier,
     groupId: String,
+    flightId: String,
     viewModel: MasterPackageGroupDetailsViewModel = koinViewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToMasterPackageDetails: (String) -> Unit = {}
 ) {
     LaunchedEffect(Unit) {
-        viewModel.init(groupId)
+        viewModel.init(groupId, flightId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass

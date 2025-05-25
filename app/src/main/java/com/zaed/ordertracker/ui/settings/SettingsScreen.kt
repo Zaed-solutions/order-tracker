@@ -1,7 +1,5 @@
 package com.zaed.ordertracker.ui.settings
 
-import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -43,7 +41,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -82,43 +79,24 @@ fun SettingsScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    //todo: nothing happens after selecting google account
     val startForResult =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            Log.d("SettingsScreen", "ActivityResult received - ResultCode: ${result.resultCode}")
-            Log.d("SettingsScreen", "RESULT_OK constant: ${Activity.RESULT_OK}")
+            val intent = result.data
+            if (intent != null) {
+                val task: Task<GoogleSignInAccount> =
+                    GoogleSignIn.getSignedInAccountFromIntent(intent)
 
-            if (result.resultCode == Activity.RESULT_OK) {
-                Log.d("SettingsScreen", "Result OK - processing intent")
-                val intent = result.data
-                Log.d("SettingsScreen", "Intent data: $intent")
-
-                if (intent != null) {
-                    Log.d("SettingsScreen", "Intent not null - getting account")
-                    val task: Task<GoogleSignInAccount> =
-                        GoogleSignIn.getSignedInAccountFromIntent(intent)
-
-                    task.addOnCompleteListener { completedTask ->
-                        Log.d("SettingsScreen", "Task completed - Success: ${completedTask.isSuccessful}")
-                        if (completedTask.isSuccessful) {
-                            val account = completedTask.result
-                            Log.d("SettingsScreen", "Account retrieved: ${account?.email}")
-                        } else {
-                            Log.e("SettingsScreen", "Task failed", completedTask.exception)
-                        }
-                    }
-
-                    task.addOnSuccessListener { account ->
-                        Log.d("SettingsScreen", "onActivityResult: $account")
-                        Toast.makeText(context, "Google Sign-in Success", Toast.LENGTH_LONG).show()
+                task
+                    .addOnSuccessListener { account ->
                         viewModel.getSignedInAccount()
                     }.addOnFailureListener { e ->
-                        Log.e("SettingsScreen", "onActivityResult: Failed to get account", e)
-                        Toast.makeText(context, context.getString(R.string.google_login_error), Toast.LENGTH_LONG).show()
+                        Toast
+                            .makeText(
+                                context,
+                                context.getString(R.string.google_login_error),
+                                Toast.LENGTH_LONG,
+                            ).show()
                     }
-                }
-            } else {
-                Log.d("SettingsScreen", "Result not OK - ResultCode: ${result.resultCode}")
             }
         }
     SettingScreenContent(
@@ -130,24 +108,26 @@ fun SettingsScreen(
                     viewModel.logout()
                 }
 
-                SettingsUiAction.OnDriveEmailClicked -> startForResult.launch(
-                    GoogleSignIn.getClient(
-                        context,
-                        signInOptions
-                    ).signInIntent
-                )
+                SettingsUiAction.OnDriveEmailClicked ->
+                    startForResult.launch(
+                        GoogleSignIn
+                            .getClient(
+                                context,
+                                signInOptions,
+                            ).signInIntent,
+                    )
 
                 SettingsUiAction.OnBackClicked -> onNavigateBack()
                 else -> viewModel.handleAction(action)
             }
-        }
+        },
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SettingScreenContent(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     state: SettingsUiState,
     onAction: (SettingsUiAction) -> Unit,
 ) {
@@ -158,25 +138,26 @@ fun SettingScreenContent(
                 title = {
                     Text(
                         text = "Settings",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { onAction(SettingsUiAction.OnBackClicked) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBackIos,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
                         )
                     }
-                }
+                },
             )
         },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // Google Drive Email Field
             EditableTextField(
@@ -193,7 +174,7 @@ fun SettingScreenContent(
                 },
                 onValueChange = { onAction(SettingsUiAction.OnDriveEmailChanged(it)) },
                 onSubmit = { onAction(SettingsUiAction.OnDriveEmailSubmitted) },
-                onCancel = { onAction(SettingsUiAction.OnDriveEmailEditCanceled) }
+                onCancel = { onAction(SettingsUiAction.OnDriveEmailEditCanceled) },
             )
 
             // Export Folder Field
@@ -204,7 +185,7 @@ fun SettingScreenContent(
                 onEditClick = { onAction(SettingsUiAction.OnExportFolderNameClicked) },
                 onValueChange = { onAction(SettingsUiAction.OnExportFolderNameChanged(it)) },
                 onSubmit = { onAction(SettingsUiAction.OnExportFolderNameSubmitted) },
-                onCancel = { onAction(SettingsUiAction.OnExportFolderEditCanceled) }
+                onCancel = { onAction(SettingsUiAction.OnExportFolderEditCanceled) },
             )
 
             // Firebase Password Field
@@ -215,44 +196,46 @@ fun SettingScreenContent(
                 onEditClick = { onAction(SettingsUiAction.OnFirebasePasswordClicked) },
                 onValueChange = { onAction(SettingsUiAction.OnFirebasePasswordChanged(it)) },
                 onSubmit = { onAction(SettingsUiAction.OnFirebasePasswordSubmitted) },
-                onCancel = { onAction(SettingsUiAction.OnFirebasePasswordEditCanceled) }
+                onCancel = { onAction(SettingsUiAction.OnFirebasePasswordEditCanceled) },
             )
 
             // Users Section
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .weight(1f)
-                    .wrapContentHeight(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .weight(1f)
+                        .wrapContentHeight(),
             ) {
                 Text("Users")
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(2.dp, Color.Black)
+                    border = BorderStroke(2.dp, Color.Black),
                 ) {
                     LazyColumn {
                         stickyHeader {
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(MaterialTheme.colorScheme.outline),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .background(MaterialTheme.colorScheme.outline),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
                                     "UserName",
                                     modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
                                 Text(
                                     "Password",
                                     modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
                                 Text(
                                     "Edit",
                                     modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
 
                                 FilledIconButton(
@@ -262,7 +245,7 @@ fun SettingScreenContent(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Add,
-                                        contentDescription = "Add User"
+                                        contentDescription = "Add User",
                                     )
                                 }
                             }
@@ -276,36 +259,39 @@ fun SettingScreenContent(
                                 Text(
                                     user.username,
                                     modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
                                 Text(
                                     user.password,
                                     modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
                                 FilledIconButton(
                                     onClick = { onAction(SettingsUiAction.OnEditUserClicked(user)) },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .wrapContentSize()
+                                    modifier =
+                                        Modifier
+                                            .weight(1f)
+                                            .wrapContentSize(),
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Edit,
-                                        contentDescription = "Edit User"
+                                        contentDescription = "Edit User",
                                     )
                                 }
                                 FilledIconButton(
                                     onClick = { onAction(SettingsUiAction.OnRemoveUserClicked(user)) },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .wrapContentSize(),
-                                    colors = IconButtonDefaults.filledIconButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.error
-                                    )
+                                    modifier =
+                                        Modifier
+                                            .weight(1f)
+                                            .wrapContentSize(),
+                                    colors =
+                                        IconButtonDefaults.filledIconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.error,
+                                        ),
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Delete,
-                                        contentDescription = "Delete User"
+                                        contentDescription = "Delete User",
                                     )
                                 }
                             }
@@ -316,50 +302,52 @@ fun SettingScreenContent(
 
             // MP Groups Section
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .weight(1f)
-                    .wrapContentHeight(),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .weight(1f)
+                        .wrapContentHeight(),
             ) {
                 Text("MP Groups Settings")
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(2.dp, Color.Black)
+                    border = BorderStroke(2.dp, Color.Black),
                 ) {
                     LazyColumn {
                         stickyHeader {
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(MaterialTheme.colorScheme.outline),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .background(MaterialTheme.colorScheme.outline),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceEvenly,
                             ) {
                                 Text(
                                     "Mp Group",
                                     modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
                                 Text(
                                     "Color",
                                     modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
                                 Text(
                                     "Edit",
                                     modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
 
                                 FilledIconButton(
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(16.dp),
-                                    onClick = { onAction(SettingsUiAction.OnAddNewMpGroupClicked) }
+                                    onClick = { onAction(SettingsUiAction.OnAddNewMpGroupClicked) },
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Add,
-                                        contentDescription = "Add MP Group"
+                                        contentDescription = "Add MP Group",
                                     )
                                 }
                             }
@@ -373,41 +361,45 @@ fun SettingScreenContent(
                                 Text(
                                     group.name,
                                     modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
                                 Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .size(16.dp)
-                                        .background(Color(group.color), CircleShape)
+                                    modifier =
+                                        Modifier
+                                            .weight(1f)
+                                            .size(16.dp)
+                                            .background(Color(group.color), CircleShape),
                                 )
                                 FilledIconButton(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .wrapContentSize(),
-                                    onClick = { onAction(SettingsUiAction.OnEditMpGroupClicked(group)) }
+                                    modifier =
+                                        Modifier
+                                            .weight(1f)
+                                            .wrapContentSize(),
+                                    onClick = { onAction(SettingsUiAction.OnEditMpGroupClicked(group)) },
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Edit,
-                                        contentDescription = "Edit MP Group"
+                                        contentDescription = "Edit MP Group",
                                     )
                                 }
-                                if(group.canDelete) {
+                                if (group.canDelete) {
                                     FilledIconButton(
                                         onClick = { onAction(SettingsUiAction.OnRemoveMpGroup(group)) },
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .wrapContentSize(),
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.error
-                                        )
+                                        modifier =
+                                            Modifier
+                                                .weight(1f)
+                                                .wrapContentSize(),
+                                        colors =
+                                            IconButtonDefaults.filledIconButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.error,
+                                            ),
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Delete,
-                                            contentDescription = "Delete MP Group"
+                                            contentDescription = "Delete MP Group",
                                         )
                                     }
-                                }else{
+                                } else {
                                     Spacer(modifier = Modifier.weight(1f))
                                 }
                             }
@@ -425,7 +417,7 @@ fun SettingScreenContent(
                 onUsernameChange = { onAction(SettingsUiAction.OnTempUsernameChanged(it)) },
                 onPasswordChange = { onAction(SettingsUiAction.OnTempPasswordChanged(it)) },
                 onConfirm = { onAction(SettingsUiAction.OnConfirmAddUser) },
-                onDismiss = { onAction(SettingsUiAction.OnDismissUserDialog) }
+                onDismiss = { onAction(SettingsUiAction.OnDismissUserDialog) },
             )
         }
 
@@ -436,7 +428,7 @@ fun SettingScreenContent(
                 onUsernameChange = { onAction(SettingsUiAction.OnTempUsernameChanged(it)) },
                 onPasswordChange = { onAction(SettingsUiAction.OnTempPasswordChanged(it)) },
                 onConfirm = { onAction(SettingsUiAction.OnConfirmEditUser) },
-                onDismiss = { onAction(SettingsUiAction.OnDismissUserDialog) }
+                onDismiss = { onAction(SettingsUiAction.OnDismissUserDialog) },
             )
         }
 
@@ -444,7 +436,7 @@ fun SettingScreenContent(
             DeleteUserConfirmationDialog(
                 user = state.selectedUser,
                 onConfirm = { onAction(SettingsUiAction.OnConfirmDeleteUser) },
-                onDismiss = { onAction(SettingsUiAction.OnDismissUserDialog) }
+                onDismiss = { onAction(SettingsUiAction.OnDismissUserDialog) },
             )
         }
 
@@ -455,7 +447,7 @@ fun SettingScreenContent(
                 onMpGroupNameChange = { onAction(SettingsUiAction.OnTempMpGroupNameChanged(it)) },
                 onMpGroupColorChange = { onAction(SettingsUiAction.OnTempMpGroupColorChanged(it)) },
                 onConfirm = { onAction(SettingsUiAction.OnConfirmAddMpGroup) },
-                onDismiss = { onAction(SettingsUiAction.OnDismissMpGroupDialog) }
+                onDismiss = { onAction(SettingsUiAction.OnDismissMpGroupDialog) },
             )
         }
 
@@ -475,7 +467,7 @@ fun SettingScreenContent(
             DeleteMpGroupConfirmationDialog(
                 mpGroup = state.selectedMpGroup,
                 onConfirm = { onAction(SettingsUiAction.OnConfirmDeleteMpGroup) },
-                onDismiss = { onAction(SettingsUiAction.OnDismissMpGroupDialog) }
+                onDismiss = { onAction(SettingsUiAction.OnDismissMpGroupDialog) },
             )
         }
     }
@@ -489,7 +481,7 @@ private fun EditableTextField(
     onEditClick: () -> Unit,
     onValueChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     var tempValue by remember { mutableStateOf(value) }
 
@@ -498,15 +490,16 @@ private fun EditableTextField(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = label,
             color = MaterialTheme.colorScheme.outline,
-            textAlign = TextAlign.Start
+            textAlign = TextAlign.Start,
         )
         OutlinedTextField(
             shape = RoundedCornerShape(16.dp),
             value = if (isEditing) tempValue else value,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp),
             readOnly = !isEditing,
             onValueChange = {
                 tempValue = it
@@ -525,7 +518,7 @@ private fun EditableTextField(
                             Icon(
                                 imageVector = Icons.Default.Check,
                                 contentDescription = "Save",
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = MaterialTheme.colorScheme.primary,
                             )
                         }
                         IconButton(onClick = {
@@ -535,7 +528,7 @@ private fun EditableTextField(
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Cancel",
-                                tint = MaterialTheme.colorScheme.error
+                                tint = MaterialTheme.colorScheme.error,
                             )
                         }
                     }
@@ -546,11 +539,11 @@ private fun EditableTextField(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
-                            contentDescription = "Edit"
+                            contentDescription = "Edit",
                         )
                     }
                 }
-            }
+            },
         )
     }
 }
@@ -561,25 +554,28 @@ private fun SettingPreview() {
     ProjectTemplateTheme {
         SettingScreenContent(
             modifier = Modifier,
-            state = SettingsUiState(
-                exportFolderName = "MyExportFolder",
-                firebaseEmail = "firebase@example.com",
-                firebasePassword = "securePassword",
-                isEditingDriveEmail = false,
-                isEditingExportFolder = true,
-                isEditingFirebasePassword = false,
-                users = listOf(
-                    User("user1", "password1", "hjkl"),
-                    User("user2", "password2", "bnm,."),
+            state =
+                SettingsUiState(
+                    exportFolderName = "MyExportFolder",
+                    firebaseEmail = "firebase@example.com",
+                    firebasePassword = "securePassword",
+                    isEditingDriveEmail = false,
+                    isEditingExportFolder = true,
+                    isEditingFirebasePassword = false,
+                    users =
+                        listOf(
+                            User("user1", "password1", "hjkl"),
+                            User("user2", "password2", "bnm,."),
+                        ),
+                    mpGroups =
+                        listOf(
+                            MpGroup("5555555", "group1", 0xFF000000.toInt()),
+                            MpGroup("6666666", "group2", 0xFF000000.toInt()),
+                            MpGroup("7777777", "group3", 0xFF000000.toInt()),
+                        ),
+                    isShowingAddMpGroupDialog = false,
                 ),
-                mpGroups = listOf(
-                    MpGroup("5555555", "group1", 0xFF000000.toInt()),
-                    MpGroup("6666666", "group2", 0xFF000000.toInt()),
-                    MpGroup("7777777", "group3", 0xFF000000.toInt()),
-                ),
-                isShowingAddMpGroupDialog = false,
-            ),
-            {}
+            {},
         )
     }
 }

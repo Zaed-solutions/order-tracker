@@ -38,7 +38,7 @@ class MasterPackageRemoteSourceImpl(
                 } else {
                     Log.d(
                         "MasterPackageRemote",
-                        "getMasterPackagesByFlightId: snapshot: ${snapshot?.documents?.size}",
+                        "getMasterPackagesByFlightId: $flightId snapshot: ${snapshot?.documents?.size}",
                     )
                     val masterPackages =
                         snapshot?.documents?.mapNotNull {

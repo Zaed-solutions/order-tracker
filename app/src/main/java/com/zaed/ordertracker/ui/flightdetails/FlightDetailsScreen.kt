@@ -2,6 +2,7 @@ package com.zaed.ordertracker.ui.flightdetails
 
 import android.util.Log
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,17 +15,24 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalContext
@@ -42,9 +50,11 @@ import com.zaed.ordertracker.domain.model.MpGroup
 import com.zaed.ordertracker.ui.components.MasterPackageScreenContent
 import com.zaed.ordertracker.ui.components.MoreDropDownMenu
 import com.zaed.ordertracker.ui.components.MoreDropdownItem
+import com.zaed.ordertracker.ui.flightdetails.components.ConfirmNavigateToLoginDialog
 import com.zaed.ordertracker.ui.flightdetails.components.ShipmentsScreenContent
 import com.zaed.ordertracker.ui.util.exportShipmentsAsExcel
 import com.zaed.ordertracker.ui.util.toRows
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -53,12 +63,14 @@ fun FlightDetailsScreen(
     modifier: Modifier = Modifier,
     flightId: String,
     onNavigateBack: () -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: FlightDetailsViewModel = koinViewModel(),
     onNavigateToMasterPackageDetails: (String) -> Unit = {},
-    onNavigateToMasterPackageGroupDetails: (String) -> Unit = {},
+    onNavigateToMasterPackageGroupDetails: (String, String) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     LaunchedEffect(true) {
         viewModel.init(flightId)
     }
@@ -68,34 +80,46 @@ fun FlightDetailsScreen(
         onAction = { action ->
             when (action) {
                 FlightDetailsUiAction.NavigateBack -> onNavigateBack()
+                FlightDetailsUiAction.NavigateToSettings -> onNavigateToSettings()
                 is FlightDetailsUiAction.OnMasterPackageClicked -> {
                     onNavigateToMasterPackageDetails(action.masterPackage.id)
                 }
 
                 is FlightDetailsUiAction.OnMasterPackageGroupClicked -> {
-                    onNavigateToMasterPackageGroupDetails(action.group.id)
+                    onNavigateToMasterPackageGroupDetails(action.group.id, state.flight.id)
                 }
+
                 FlightDetailsUiAction.ExportShipments, FlightDetailsUiAction.ReExportAllShipments -> {
-                    state.allShipments.toRows().exportShipmentsAsExcel(
-                        context = context,
-                        flightNumber = state.flight.name,
-                        headers = listOf(
-                            context.getString(R.string.count),
-                            context.getString(R.string.name),
-                            context.getString(R.string.date),
-                            "\t",
-                            context.getString(R.string.time),
-                            context.getString(R.string.t_b),
-                            context.getString(R.string.smno),
-                            context.getString(R.string.pcs),
-                            context.getString(R.string.kg),
-                            context.getString(R.string.mp_kg),
-                            context.getString(R.string.mp),
-                        ),
-                    )?.let {
-                        viewModel.handleAction(FlightDetailsUiAction.UploadExportedShipments(it))
-                    }?:{
-                        Log.e("FlightDetailsScreen", "Failed to export shipments file is null")
+                    scope.launch(Dispatchers.IO) {
+                        state.allShipments
+                            .toRows()
+                            .exportShipmentsAsExcel(
+                                context = context,
+                                flightNumber = state.flight.name,
+                                headers =
+                                    listOf(
+                                        context.getString(R.string.count),
+                                        context.getString(R.string.name),
+                                        context.getString(R.string.date),
+                                        "\t",
+                                        context.getString(R.string.time),
+                                        context.getString(R.string.t_b),
+                                        context.getString(R.string.smno),
+                                        context.getString(R.string.pcs),
+                                        context.getString(R.string.kg),
+                                        context.getString(R.string.mp_kg),
+                                        context.getString(R.string.mp),
+                                    ),
+                            )?.let {
+                                viewModel.handleAction(
+                                    FlightDetailsUiAction.UploadExportedShipments(
+                                        it,
+                                    ),
+                                )
+                            } ?: Log.e(
+                            "FlightDetailsScreen",
+                            "Failed to export shipments file is null",
+                        )
                     }
                 }
 
@@ -115,7 +139,26 @@ private fun FlightDetailsScreenContent(
     val pagerState = rememberPagerState { 2 }
     val scope = rememberCoroutineScope()
     val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+    var isNeedToLoginSheetVisible by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(state.snackbarMessage) {
+        state.snackbarMessage?.let {
+            snackbarHostState.showSnackbar(
+                message = it,
+            )
+            onAction(FlightDetailsUiAction.ResetSnackbarMessage)
+        }
+    }
+    LaunchedEffect(key1 = state.needToLogin) {
+        if (state.needToLogin) {
+            isNeedToLoginSheetVisible = true
+            onAction(FlightDetailsUiAction.ResetNeedToLogin)
+        }
+    }
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -217,7 +260,7 @@ private fun FlightDetailsScreenContent(
                 when (value) {
                     HomeTabs.SHIPMENTS.ordinal -> {
                         ShipmentsScreenContent(
-                            shipments = state.allShipments,
+                            shipments = state.displayShipments,
                             onAddShipment = { shipment ->
                                 onAction(FlightDetailsUiAction.AddShipment(shipment))
                             },
@@ -236,8 +279,6 @@ private fun FlightDetailsScreenContent(
                             modifier = Modifier.fillMaxSize(),
                             masterPackages = state.masterPackages,
                             masterPackageGroup = state.groups,
-                            onEditMasterPackageGroup = { /*TODO*/ },
-                            onDeleteMasterPackageGroup = { /*TODO*/ },
                             onDeleteMasterPackage = {
                                 onAction(FlightDetailsUiAction.DeleteMasterPackage(it.id))
                             },
@@ -256,6 +297,24 @@ private fun FlightDetailsScreenContent(
                             windowWidthSizeClass = windowWidthSizeClass,
                         )
                     }
+                }
+            }
+            AnimatedVisibility(isNeedToLoginSheetVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isNeedToLoginSheetVisible = false
+                    },
+                    sheetState = rememberModalBottomSheetState(),
+                ) {
+                    ConfirmNavigateToLoginDialog(
+                        onDismiss = {
+                            isNeedToLoginSheetVisible = false
+                        },
+                        onConfirm = {
+                            isNeedToLoginSheetVisible = false
+                            onAction(FlightDetailsUiAction.NavigateToSettings)
+                        },
+                    )
                 }
             }
         }

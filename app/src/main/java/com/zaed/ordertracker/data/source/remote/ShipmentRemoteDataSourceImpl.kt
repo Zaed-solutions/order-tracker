@@ -98,6 +98,22 @@ class ShipmentRemoteDataSourceImpl(
             Result.failure(e)
         }
 
+    override suspend fun doesFlightHaveUnExportedShipments(id: String): Result<Boolean> =
+        try {
+            val querySnapshot =
+                shipmentCollection
+                    .where(
+                        Filter.and(
+                            Filter.equalTo(ShipmentDto::flightId.name, id),
+                            Filter.equalTo(ShipmentDto::exported.name, false),
+                        ),
+                    ).get()
+                    .await()
+            Result.success(querySnapshot.documents.isNotEmpty())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
     override suspend fun updateFlightShipmentsExportedStatus(flightId: String): Result<Unit> =
         try {
             val batch = firestore.batch()

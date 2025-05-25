@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Order Tracker</string>
+    <string name="app_name">Store Data</string>
     <string name="invalid_username">Invalid username</string>
     <string name="username">Username</string>
     <string name="invalid_password">Invalid password</string>
@@ -41,4 +41,7 @@
     <string name="name">Name</string>
     <string name="mp_kg">MP KG</string>
     <string name="mp">MP</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="you_need_to_login_first_to_continue">You need to login first with google account to continue</string>
+    <string name="some_operation_requires_login">Uploading to google drive requires login</string>
 </resources>
