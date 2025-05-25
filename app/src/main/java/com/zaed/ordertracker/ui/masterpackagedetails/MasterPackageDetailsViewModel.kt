@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.ordertracker.domain.model.MasterPackage
 import com.zaed.ordertracker.domain.model.Shipment
-import com.zaed.ordertracker.domain.usecase.EditMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.GetMasterPackageWithShipmentsUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.EditMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.GetMasterPackageWithShipmentsUseCase
 import com.zaed.ordertracker.domain.usecase.authentication.GetCurrentUserUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.CreateShipmentUseCase
 import com.zaed.ordertracker.domain.usecase.shipment.DeleteShipmentUseCase

@@ -1,6 +1,5 @@
-package com.zaed.ordertracker.domain.usecase
+package com.zaed.ordertracker.domain.usecase.masterpackage
 
-import com.zaed.ordertracker.domain.model.MasterPackage
 import com.zaed.ordertracker.domain.model.MpGroup
 import com.zaed.ordertracker.domain.repository.MpGroupRepository
 import kotlinx.coroutines.flow.Flow

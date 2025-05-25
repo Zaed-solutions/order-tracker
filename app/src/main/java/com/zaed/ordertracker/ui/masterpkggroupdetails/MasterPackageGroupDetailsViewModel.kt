@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.ordertracker.domain.model.MasterPackage
 import com.zaed.ordertracker.domain.model.MpGroup
-import com.zaed.ordertracker.domain.usecase.AddMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.DeleteMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.EditMasterPackageUseCase
-import com.zaed.ordertracker.domain.usecase.GetMpGroupWithMasterPackagesByIdUseCase
-import com.zaed.ordertracker.domain.usecase.SaveMpGroupUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.AddMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.DeleteMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.EditMasterPackageUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.GetMpGroupWithMasterPackagesByIdUseCase
+import com.zaed.ordertracker.domain.usecase.masterpackage.SaveMpGroupUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
