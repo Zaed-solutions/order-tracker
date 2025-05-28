@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.ordertracker.domain.model.Flight
+import com.zaed.ordertracker.domain.usecase.authentication.LogoutUserUseCase
 import com.zaed.ordertracker.domain.usecase.flight.CreateFlightUseCase
 import com.zaed.ordertracker.domain.usecase.flight.DeleteFlightUseCase
 import com.zaed.ordertracker.domain.usecase.flight.GetAllFlightsUseCase
@@ -20,6 +21,7 @@ class FlightsViewModel(
     private val createFlightUseCase: CreateFlightUseCase,
     private val updateFlightUseCase: UpdateFlightUseCase,
     private val deleteFlightUseCase: DeleteFlightUseCase,
+    private val logoutUserUseCase: LogoutUserUseCase,
 ) : ViewModel() {
     private val TAG: String = "FlightsViewModel"
     private val _uiState = MutableStateFlow(FlightsUiState())
@@ -35,8 +37,9 @@ class FlightsViewModel(
                 result
                     .onSuccess { flights ->
                         _uiState.update { oldState ->
-                            oldState.copy(isLoading = false, flights = flights)
+                            oldState.copy(isLoading = false, allFlights = flights)
                         }
+                        filterFlights()
                     }.onFailure {
                         _uiState.update { oldState ->
                             oldState.copy(isLoading = false)
@@ -52,8 +55,53 @@ class FlightsViewModel(
             is FlightsUiAction.AddFlight -> addFlight(action.flight)
             is FlightsUiAction.DeleteFlight -> deleteFlight(action.flightId)
             is FlightsUiAction.EditFlight -> updateFlight(action.updatedFlight)
+            is FlightsUiAction.UpdateSearchQuery -> updateSearchQuery(action.query)
             FlightsUiAction.ResetError -> _uiState.update { it.copy(error = null) }
+            FlightsUiAction.Logout -> logout()
             else -> Unit
+        }
+    }
+
+    private fun logout() {
+        viewModelScope.launch(Dispatchers.IO) {
+            logoutUserUseCase()
+                .onSuccess {
+                    _uiState.update {
+                        it.copy(isLoggedOut = true)
+                    }
+                }.onFailure {
+                    Log.e(TAG, "logout: ", it)
+                }
+        }
+    }
+
+    private fun updateSearchQuery(query: String) {
+        _uiState.update { oldState ->
+            oldState.copy(searchQuery = query)
+        }
+        filterFlights()
+    }
+
+    private fun filterFlights() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val (query, allFlights) =
+                uiState.value.run {
+                    searchQuery to allFlights
+                }
+            if (query.isBlank()) {
+                _uiState.update { oldState ->
+                    oldState.copy(displayedFlights = allFlights)
+                }
+            } else {
+                allFlights
+                    .filter {
+                        it.name.contains(query, ignoreCase = true)
+                    }.let { filteredFlights ->
+                        _uiState.update { oldState ->
+                            oldState.copy(displayedFlights = filteredFlights)
+                        }
+                    }
+            }
         }
     }
 
@@ -83,7 +131,7 @@ class FlightsViewModel(
                         oldState.copy(isLoading = false)
                     }
                 }.onFailure {
-                    if(it is FlightHasUnprocessedShipmentsException){
+                    if (it is FlightHasUnprocessedShipmentsException) {
                         _uiState.update { oldState ->
                             oldState.copy(error = "Flight has unprocessed shipments")
                         }

@@ -32,6 +32,7 @@ import com.zaed.ordertracker.domain.usecase.masterpackage.SaveMpGroupUseCase
 import com.zaed.ordertracker.domain.usecase.SaveUserUseCase
 import com.zaed.ordertracker.domain.usecase.UploadExcelSheetUseCase
 import com.zaed.ordertracker.domain.usecase.authentication.GetCurrentUserUseCase
+import com.zaed.ordertracker.domain.usecase.authentication.LogoutUserUseCase
 import com.zaed.ordertracker.domain.usecase.flight.GetFlightByIdUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -75,4 +76,5 @@ val useCaseModule =
         singleOf(::GetCurrentUserUseCase)
         singleOf(::GetFlightByIdUseCase)
         singleOf(::UploadExcelSheetUseCase)
+        singleOf(::LogoutUserUseCase)
     }

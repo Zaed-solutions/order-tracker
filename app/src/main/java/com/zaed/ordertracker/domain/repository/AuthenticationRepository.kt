@@ -9,4 +9,5 @@ interface AuthenticationRepository {
     ): Result<Unit>
 
     suspend fun getCurrentUser(): Result<User>
+    suspend fun logout(): Result<Unit>
 }

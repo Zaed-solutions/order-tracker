@@ -271,14 +271,18 @@ private fun FlightDetailsScreenContent(
                                 onAction(FlightDetailsUiAction.DeleteShipment(shipmentId))
                             },
                             windowWidthSizeClass = windowWidthSizeClass,
+                            searchQuery = state.shipmentSearchQuery,
+                            onUpdateSearchQuery = {
+                                onAction(FlightDetailsUiAction.UpdateShipmentSearchQuery(it))
+                            },
                         )
                     }
 
                     HomeTabs.MASTER_PACKAGES.ordinal -> {
                         MasterPackageScreenContent(
                             modifier = Modifier.fillMaxSize(),
-                            masterPackages = state.masterPackages,
-                            masterPackageGroup = state.groups,
+                            masterPackages = state.displayedMasterPackages,
+                            masterPackageGroup = state.displayedGroups,
                             onDeleteMasterPackage = {
                                 onAction(FlightDetailsUiAction.DeleteMasterPackage(it.id))
                             },
@@ -295,6 +299,10 @@ private fun FlightDetailsScreenContent(
                                 onAction(FlightDetailsUiAction.OnMasterPackageGroupClicked(it))
                             },
                             windowWidthSizeClass = windowWidthSizeClass,
+                            searchQuery = state.masterPackageSearchQuery,
+                            onUpdateSearchQuery = {
+                                onAction(FlightDetailsUiAction.UpdateMasterPackageSearchQuery(it))
+                            }
                         )
                     }
                 }
@@ -338,7 +346,7 @@ private fun HomePreview() {
     FlightDetailsScreenContent(
         state =
             FlightDetailsUiState(
-                groups =
+                allGroups =
                     listOf(
                         MpGroup(
                             id = "1",

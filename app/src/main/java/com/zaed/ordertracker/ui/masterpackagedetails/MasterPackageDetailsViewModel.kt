@@ -57,8 +57,9 @@ class MasterPackageDetailsViewModel(
                         )
                         _uiState.value = _uiState.value.copy(
                             masterPackage = masterPackage,
-                            shipments = masterPackage.shipments
+                            allShipments = masterPackage.shipments
                         )
+                        filterShipments()
                     },
                     onFailure = {
                         Log.d(
@@ -74,10 +75,36 @@ class MasterPackageDetailsViewModel(
     fun onAction(action: MasterPackageDetailsUiAction) {
         when (action) {
             is MasterPackageDetailsUiAction.OnAddNewShipment -> addNewShipment(action.shipment)
+            is MasterPackageDetailsUiAction.OnUpdateSearchQuery -> updateSearchQuery(action.query)
             is MasterPackageDetailsUiAction.OnDeleteShipment -> deleteShipment(action.shipmentId)
             is MasterPackageDetailsUiAction.OnEditShipment -> updateShipment(action.shipment)
             is MasterPackageDetailsUiAction.OnEditMasterPackage -> updateMasterPackage(action.masterPackage)
             else -> {}
+        }
+    }
+
+    private fun updateSearchQuery(query: String) {
+        _uiState.update { oldState ->
+            oldState.copy(searchQuery = query)
+        }
+        filterShipments()
+    }
+
+    private fun filterShipments() {
+        viewModelScope.launch (Dispatchers.Default){
+            val (query, allShipments) = uiState.value.run { searchQuery to allShipments }
+            if(query.isBlank()){
+                _uiState.update { oldState ->
+                    oldState.copy(displayedShipments = allShipments)
+                }
+            } else {
+                val filteredShipments = allShipments.filter { shipment ->
+                    shipment.shipmentNumber.contains(query, ignoreCase = true)
+                }
+                _uiState.update { oldState ->
+                    oldState.copy(displayedShipments = filteredShipments)
+                }
+            }
         }
     }
 

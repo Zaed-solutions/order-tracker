@@ -64,6 +64,13 @@ fun NavigationHost(
                 onNavigateToFlightDetails = {
                     navController.navigate(Route.FlightDetailsRoute(it))
                 },
+                onNavigateToLogin = {
+                    navController.navigate(Route.LoginRoute) {
+                        popUpTo(Route.FlightsRoute) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
         composable<Route.FlightDetailsRoute> { navBackStackEntry ->

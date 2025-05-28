@@ -10,6 +10,10 @@ sealed interface FlightDetailsUiAction {
         val shipment: Shipment,
     ) : FlightDetailsUiAction
 
+    data class UpdateShipmentSearchQuery(val query: String): FlightDetailsUiAction
+
+    data class UpdateMasterPackageSearchQuery(val query: String): FlightDetailsUiAction
+
     data object ResetNeedToLogin : FlightDetailsUiAction
 
     data object NavigateToSettings : FlightDetailsUiAction

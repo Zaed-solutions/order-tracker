@@ -26,6 +26,8 @@ class AuthenticationRepositoryImpl(
                 ?: throw IllegalStateException("No user logged in"),
         )
 
+    override suspend fun logout(): Result<Unit> = runCatching { localStorage.saveCurrentUserId("") }
+
     private suspend fun storeLocalUser(user: User) {
         localStorage.saveCurrentUserId(user.id)
     }

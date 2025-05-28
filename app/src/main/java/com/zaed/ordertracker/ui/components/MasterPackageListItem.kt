@@ -87,6 +87,8 @@ fun MasterPackageScreenContent(
     onMasterPackageClicked: (MasterPackage) -> Unit = {},
     onMasterPackageGroupClicked: (MpGroup) -> Unit = {},
     windowWidthSizeClass: WindowWidthSizeClass,
+    searchQuery: String,
+    onUpdateSearchQuery: (String) -> Unit,
 ) {
     var selectedMasterPackage by remember { mutableStateOf(MasterPackage()) }
     var selectedMasterPackageGroup by remember { mutableStateOf(MpGroup()) }
@@ -107,6 +109,16 @@ fun MasterPackageScreenContent(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(vertical = 16.dp),
         ) {
+            stickyHeader {
+                SearchBarWithEditIcon(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    searchQuery = searchQuery,
+                    onUpdateSearchQuery = onUpdateSearchQuery,
+                    onEditClicked = {
+//                        todo: edit mode
+                    }
+                )
+            }
             stickyHeader {
                 if (windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                     CompactMasterPackageListHeader()
@@ -1591,6 +1603,8 @@ private fun MpItemPreview() {
                     ),
                 ),
             windowWidthSizeClass = WindowWidthSizeClass.MEDIUM,
+            searchQuery = "",
+            onUpdateSearchQuery = {}
         )
     }
 }
