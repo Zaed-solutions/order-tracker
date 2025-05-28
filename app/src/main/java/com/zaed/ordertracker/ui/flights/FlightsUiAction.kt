@@ -18,6 +18,14 @@ sealed interface FlightsUiAction {
     data class NavigateToFlightDetails(
         val flightId: String,
     ) : FlightsUiAction
-    data object NavigateToSettings: FlightsUiAction
-    data object ResetError: FlightsUiAction
+
+    data class UpdateSearchQuery(
+        val query: String,
+    ) : FlightsUiAction
+
+    data object NavigateToSettings : FlightsUiAction
+
+    data object ResetError : FlightsUiAction
+
+    data object Logout : FlightsUiAction
 }

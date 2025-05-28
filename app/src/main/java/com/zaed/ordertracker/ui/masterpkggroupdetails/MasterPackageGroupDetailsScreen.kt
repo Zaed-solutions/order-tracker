@@ -21,10 +21,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.zaed.ordertracker.R
 import com.zaed.ordertracker.domain.model.MasterPackage
 import com.zaed.ordertracker.domain.model.MpGroup
 import com.zaed.ordertracker.ui.components.EditMpGroupDialog
@@ -47,7 +45,7 @@ fun MasterPackageGroupDetailsScreen(
     val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
     MasterPackageGroupDetailsScreenContent(
         modifier = modifier,
-        masterPackages = uiState.masterPackages,
+        masterPackages = uiState.displayedMasterPackages,
         group = uiState.group,
         onAction = { action ->
             when (action) {
@@ -58,7 +56,8 @@ fun MasterPackageGroupDetailsScreen(
                 else -> viewModel.onAction(action)
             }
         },
-        windowWidthSizeClass = windowWidthSizeClass
+        windowWidthSizeClass = windowWidthSizeClass,
+        searchQuery = uiState.searchQuery
     )
 }
 
@@ -70,6 +69,7 @@ fun MasterPackageGroupDetailsScreenContent(
     group: MpGroup,
     onAction: (MasterPackageGroupDetailsUiAction) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
+    searchQuery: String,
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
     var tempGroupName by remember { mutableStateOf(group.name) }
@@ -106,7 +106,6 @@ fun MasterPackageGroupDetailsScreenContent(
                 }
             )
         },
-        floatingActionButton = {},
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -121,7 +120,9 @@ fun MasterPackageGroupDetailsScreenContent(
                 onEditMasterPackage = { onAction(MasterPackageGroupDetailsUiAction.OnEditMasterPackage(it)) },
                 onDeleteMasterPackage = { onAction(MasterPackageGroupDetailsUiAction.OnDeleteMasterPackage(it.id)) },
                 onMasterPackageClicked = { onAction(MasterPackageGroupDetailsUiAction.OnMasterPackageClicked(it)) },
-                windowWidthSizeClass = windowWidthSizeClass
+                windowWidthSizeClass = windowWidthSizeClass,
+                searchQuery = searchQuery,
+                onUpdateSearchQuery = { onAction(MasterPackageGroupDetailsUiAction.OnMasterPackageSearchQueryChanged(it)) },
             )
         }
 

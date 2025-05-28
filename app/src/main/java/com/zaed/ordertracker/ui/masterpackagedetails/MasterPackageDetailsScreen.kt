@@ -39,14 +39,15 @@ fun MasterPackageDetailsScreen(
     val windowWidthSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
     MasterPackageDetailsScreenContent(
         modifier = modifier,
-        shipments = uiState.shipments,
+        shipments = uiState.displayedShipments,
         onAction = { action ->
             when (action) {
                 is MasterPackageDetailsUiAction.OnBack -> onNavigateBack()
                 else -> viewModel.onAction(action)
             }
         },
-        windowWidthSizeClass = windowWidthSizeClass
+        windowWidthSizeClass = windowWidthSizeClass,
+        searchQuery = uiState.searchQuery
     )
 
 
@@ -57,6 +58,7 @@ fun MasterPackageDetailsScreen(
 fun MasterPackageDetailsScreenContent(
     modifier: Modifier,
     shipments: List<Shipment>,
+    searchQuery: String,
     onAction: (MasterPackageDetailsUiAction) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
 ) {
@@ -93,7 +95,9 @@ fun MasterPackageDetailsScreenContent(
                 onAddShipment = { onAction(MasterPackageDetailsUiAction.OnAddNewShipment(it)) },
                 onEditShipment = { onAction(MasterPackageDetailsUiAction.OnEditShipment(it)) },
                 onDeleteShipment = { onAction(MasterPackageDetailsUiAction.OnDeleteShipment(it)) },
-                windowWidthSizeClass = windowWidthSizeClass
+                windowWidthSizeClass = windowWidthSizeClass,
+                searchQuery = searchQuery,
+                onUpdateSearchQuery = { onAction(MasterPackageDetailsUiAction.OnUpdateSearchQuery(it)) },
             )
         }
     }

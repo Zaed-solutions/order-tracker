@@ -44,4 +44,7 @@
     <string name="dismiss">Dismiss</string>
     <string name="you_need_to_login_first_to_continue">You need to login first with google account to continue</string>
     <string name="some_operation_requires_login">Uploading to google drive requires login</string>
+    <string name="search">Search</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
 </resources>

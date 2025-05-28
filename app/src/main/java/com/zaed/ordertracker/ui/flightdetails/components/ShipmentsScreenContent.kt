@@ -1,5 +1,6 @@
 package com.zaed.ordertracker.ui.flightdetails.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,6 +39,7 @@ import androidx.window.core.layout.WindowWidthSizeClass
 import com.zaed.ordertracker.R
 import com.zaed.ordertracker.domain.model.Shipment
 import com.zaed.ordertracker.ui.components.ConfirmDeleteBottomSheet
+import com.zaed.ordertracker.ui.components.SearchBarWithEditIcon
 
 @Composable
 fun ShipmentsScreenContent(
@@ -48,6 +49,8 @@ fun ShipmentsScreenContent(
     onEditShipment: (Shipment) -> Unit,
     onDeleteShipment: (String) -> Unit,
     windowWidthSizeClass: WindowWidthSizeClass,
+    searchQuery: String,
+    onUpdateSearchQuery: (String) -> Unit
 ) {
     var selectedShipment by remember { mutableStateOf(Shipment()) }
     var isSaveShipmentBottomSheetVisible by remember { mutableStateOf(false) }
@@ -57,27 +60,19 @@ fun ShipmentsScreenContent(
             modifier
                 .fillMaxWidth(),
     ) {
-//        AnimatedContent(windowWidthSizeClass) {
-//            when (it) {
-//                WindowWidthSizeClass.COMPACT ->
-//                    CompactShipmentsHeader(
-//                        modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp),
-//                        onAddShipmentClicked = {
-//                            selectedShipment = Shipment()
-//                            isSaveShipmentBottomSheetVisible = true
-//                        },
-//                    )
-//
-//                else ->
-//                    ExpandedShipmentsHeader(
-//                        modifier = Modifier.padding(horizontal = 16.dp),
-//                        onAddShipmentClicked = {
-//                            selectedShipment = Shipment()
-//                            isSaveShipmentBottomSheetVisible = true
-//                        },
-//                    )
-//            }
-//        }
+        SearchBarWithEditIcon(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            searchQuery = searchQuery,
+            onUpdateSearchQuery = onUpdateSearchQuery,
+            onEditClicked = {
+                //todo: edit mode
+            }
+        )
+        AnimatedVisibility(windowWidthSizeClass != WindowWidthSizeClass.COMPACT) {
+            ExpandedShipmentsHeader(
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
         LazyColumn(
             modifier = Modifier.fillMaxWidth().weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -117,22 +112,24 @@ fun ShipmentsScreenContent(
             onClick = {
                 isSaveShipmentBottomSheetVisible = true
             },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally),
+            modifier =
+                Modifier
+                    .align(Alignment.CenterHorizontally),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
         ) {
             Icon(
                 imageVector = Icons.Default.Save,
                 contentDescription = null,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(18.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Add New Shipment",
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
             )
         }
         SaveShipmentBottomSheet(
@@ -187,10 +184,7 @@ private fun CompactShipmentsHeader(
 }
 
 @Composable
-private fun ExpandedShipmentsHeader(
-    modifier: Modifier = Modifier,
-    onAddShipmentClicked: () -> Unit,
-) {
+private fun ExpandedShipmentsHeader(modifier: Modifier = Modifier) {
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -267,20 +261,13 @@ private fun ExpandedShipmentsHeader(
                             .padding(horizontal = 8.dp),
                 )
 
-                Button(
+                Spacer(
                     modifier =
                         Modifier
                             .weight(1f)
                             .width(48.dp)
                             .padding(horizontal = 8.dp),
-                    onClick = onAddShipmentClicked,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        tint = Color.White,
-                    )
-                }
+                )
             }
         }
         HorizontalDivider()

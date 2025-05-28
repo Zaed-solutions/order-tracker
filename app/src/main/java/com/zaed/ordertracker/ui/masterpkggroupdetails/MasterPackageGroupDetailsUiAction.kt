@@ -7,6 +7,7 @@ sealed interface MasterPackageGroupDetailsUiAction {
     data class OnAddNewMasterPackage(val masterPackage: MasterPackage) : MasterPackageGroupDetailsUiAction
     data class OnEditMasterPackage(val masterPackage: MasterPackage) : MasterPackageGroupDetailsUiAction
     data class OnDeleteMasterPackage(val masterPackageId: String) : MasterPackageGroupDetailsUiAction
+    data class OnMasterPackageSearchQueryChanged(val query: String) : MasterPackageGroupDetailsUiAction
     data class OnEditGroup(val group: MpGroup) : MasterPackageGroupDetailsUiAction
     data class OnMasterPackageClicked(val masterPackage: MasterPackage) : MasterPackageGroupDetailsUiAction
     data object OnBack : MasterPackageGroupDetailsUiAction

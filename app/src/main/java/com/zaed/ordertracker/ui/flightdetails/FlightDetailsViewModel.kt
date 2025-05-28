@@ -90,8 +90,9 @@ class FlightDetailsViewModel(
                     .onSuccess { groups ->
                         _uiState.update { oldState ->
                             Log.d(TAG, "fetchGroups: groups: ${groups.size}")
-                            oldState.copy(groups = groups)
+                            oldState.copy(allGroups = groups)
                         }
+                        filterMasterPackages()
                     }.onFailure {
                         Log.e(TAG, "fetchGroups: ", it)
                     }
@@ -109,8 +110,9 @@ class FlightDetailsViewModel(
                                 TAG,
                                 "fetchMasterPackages: masterPackages: ${masterPackages.size}",
                             )
-                            oldState.copy(masterPackages = masterPackages.filter { it.groupId.isEmpty() })
+                            oldState.copy(allMasterPackages = masterPackages.filter { it.groupId.isEmpty() })
                         }
+                        filterMasterPackages()
                     }.onFailure {
                         Log.e(TAG, "fetchMasterPackages: ", it)
                     }
@@ -135,10 +137,10 @@ class FlightDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val namePrefix = masterPackage.name.takeWhile { it.isLetter() }
             val sameMasterPackage =
-                uiState.value.masterPackages.filter {
+                uiState.value.allMasterPackages.filter {
                     it.name.startsWith(namePrefix) && it.id != masterPackage.id
                 }
-            val existingGroup = uiState.value.groups.find { it.name == namePrefix }
+            val existingGroup = uiState.value.allGroups.find { it.name == namePrefix }
 
             val updatedMasterPackage =
                 masterPackage.apply {
@@ -199,9 +201,9 @@ class FlightDetailsViewModel(
                             oldState.copy(
                                 isLoading = false,
                                 allShipments = sortedShipments,
-                                displayShipments = sortedShipments.filter { it.masterPackageId.isBlank() },
                             )
                         }
+                        filterShipments()
                     }.onFailure {
                         _uiState.update { oldState ->
                             oldState.copy(isLoading = false)
@@ -230,7 +232,77 @@ class FlightDetailsViewModel(
                     oldState.copy(snackbarMessage = null)
                 }
 
+            is FlightDetailsUiAction.UpdateShipmentSearchQuery -> updateShipmentSearchQuery(action.query)
+            is FlightDetailsUiAction.UpdateMasterPackageSearchQuery ->
+                updateMasterPackageSearchQuery(
+                    action.query,
+                )
+
             else -> Unit
+        }
+    }
+
+    private fun updateMasterPackageSearchQuery(query: String) {
+        _uiState.update { oldState ->
+            oldState.copy(masterPackageSearchQuery = query)
+        }
+        filterMasterPackages()
+    }
+
+    private fun filterMasterPackages() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val query = uiState.value.masterPackageSearchQuery
+            val allMasterPackages = uiState.value.allMasterPackages
+            val allMpGroups = uiState.value.allGroups
+            if (query.isBlank()) {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        displayedGroups = allMpGroups,
+                        displayedMasterPackages = allMasterPackages,
+                    )
+                }
+            } else {
+                val filteredMasterPackages =
+                    allMasterPackages.filter { shipment ->
+                        shipment.name.contains(query, ignoreCase = true)
+                    }
+                val filteredMpGroups =
+                    allMpGroups.filter { group ->
+                        group.name.contains(query, ignoreCase = true)
+                    }
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        displayedGroups = filteredMpGroups,
+                        displayedMasterPackages = filteredMasterPackages,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun updateShipmentSearchQuery(query: String) {
+        _uiState.update { oldState ->
+            oldState.copy(shipmentSearchQuery = query)
+        }
+        filterShipments()
+    }
+
+    private fun filterShipments() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val (query, allShipments) = uiState.value.run { shipmentSearchQuery to allShipments }
+            if (query.isBlank()) {
+                _uiState.update { oldState ->
+                    oldState.copy(displayShipments = allShipments)
+                }
+            } else {
+                val filteredShipments =
+                    allShipments.filter { shipment ->
+                        shipment.shipmentNumber.contains(query, ignoreCase = true) && shipment.masterPackageId.isBlank()
+                    }
+                _uiState.update { oldState ->
+                    oldState.copy(displayShipments = filteredShipments)
+                }
+            }
         }
     }
 
@@ -261,10 +333,10 @@ class FlightDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val namePrefix = masterPackage.name.takeWhile { it.isLetter() }
             val sameMasterPackage =
-                uiState.value.masterPackages.filter {
+                uiState.value.allMasterPackages.filter {
                     it.name.startsWith(namePrefix)
                 }
-            val existingGroup = uiState.value.groups.find { it.name == namePrefix }
+            val existingGroup = uiState.value.allGroups.find { it.name == namePrefix }
 
             val updatedMasterPackage =
                 masterPackage.apply {

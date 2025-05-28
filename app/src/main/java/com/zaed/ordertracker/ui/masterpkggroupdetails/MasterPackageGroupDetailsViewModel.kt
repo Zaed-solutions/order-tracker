@@ -44,8 +44,9 @@ class MasterPackageGroupDetailsViewModel(
                         _uiState.value =
                             _uiState.value.copy(
                                 group = group,
-                                masterPackages = group.masterPackages,
+                                allMasterPackages = group.masterPackages,
                             )
+                        filterMasterPackages()
                     },
                     onFailure = {
                         Log.d(
@@ -64,7 +65,34 @@ class MasterPackageGroupDetailsViewModel(
             is MasterPackageGroupDetailsUiAction.OnDeleteMasterPackage -> deleteMasterPackage(action.masterPackageId)
             is MasterPackageGroupDetailsUiAction.OnEditMasterPackage -> updateMasterPackage(action.masterPackage)
             is MasterPackageGroupDetailsUiAction.OnEditGroup -> updateGroup(action.group)
+            is MasterPackageGroupDetailsUiAction.OnMasterPackageSearchQueryChanged ->
+                updateSearchQuery(
+                    action.query,
+                )
+
             else -> {}
+        }
+    }
+
+    private fun updateSearchQuery(query: String) {
+        _uiState.update { oldState ->
+            oldState.copy(searchQuery = query)
+        }
+        filterMasterPackages()
+    }
+
+    private fun filterMasterPackages() {
+        viewModelScope.launch(Dispatchers.Default) {
+            val (query, allMasterPackages) = _uiState.value.let { it.searchQuery to it.allMasterPackages }
+            if (query.isBlank()) {
+                _uiState.update { it.copy(displayedMasterPackages = allMasterPackages) }
+            } else {
+                val filteredMasterPackages =
+                    allMasterPackages.filter { masterPackage ->
+                        masterPackage.name.contains(query, ignoreCase = true)
+                    }
+                _uiState.update { it.copy(displayedMasterPackages = filteredMasterPackages) }
+            }
         }
     }
 
