@@ -1,14 +1,14 @@
 package com.zaed.ordertracker.ui.flights
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,18 +26,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.ordertracker.R
 import com.zaed.ordertracker.domain.model.Flight
 import com.zaed.ordertracker.ui.components.ConfirmDeleteBottomSheet
+import com.zaed.ordertracker.ui.components.ViewProfileDialog
 import com.zaed.ordertracker.ui.components.MoreDropDownMenu
 import com.zaed.ordertracker.ui.components.MoreDropdownItem
-import com.zaed.ordertracker.ui.components.SearchBar
 import com.zaed.ordertracker.ui.components.SearchBarWithEditIcon
 import com.zaed.ordertracker.ui.flights.components.FlightsList
 import com.zaed.ordertracker.ui.flights.components.SaveFlightBottomSheet
@@ -87,6 +85,9 @@ fun FlightsScreenContent(
     var selectedFlight: Flight by remember {
         mutableStateOf(Flight())
     }
+    var isEditProfileDialogVisible by remember {
+        mutableStateOf(false)
+    }
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(state.error) {
         state.error?.let { error ->
@@ -113,7 +114,7 @@ fun FlightsScreenContent(
                 actions = {
                     IconButton(
                         onClick = {
-                            //todo: open profile dialog
+                            isEditProfileDialogVisible = true
                         }
                     ) {
                         Icon(
@@ -131,7 +132,7 @@ fun FlightsScreenContent(
                                         onClick = {
                                             onAction(FlightsUiAction.NavigateToSettings)
                                         },
-                                        icon = Icons.Default.Upload,
+                                        icon = Icons.Default.Settings,
                                         tint = MaterialTheme.colorScheme.primary,
                                     ),
                                 )
@@ -220,6 +221,14 @@ fun FlightsScreenContent(
                     onAction(FlightsUiAction.DeleteFlight(selectedFlight.id))
                 },
             )
+            AnimatedVisibility(isEditProfileDialogVisible) {
+                ViewProfileDialog(
+                    initialUser = state.currentUser,
+                    onDismissRequest = {
+                        isEditProfileDialogVisible = false
+                    },
+                )
+            }
         }
     }
 }

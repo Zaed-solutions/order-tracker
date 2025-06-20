@@ -16,6 +16,7 @@ import com.zaed.ordertracker.domain.usecase.LogOutUseCase
 import com.zaed.ordertracker.domain.usecase.SaveExportFolderNameUseCase
 import com.zaed.ordertracker.domain.usecase.masterpackage.SaveMpGroupUseCase
 import com.zaed.ordertracker.domain.usecase.SaveUserUseCase
+import com.zaed.ordertracker.domain.usecase.authentication.GetCurrentUserUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +36,7 @@ class SettingsViewModel(
     private val logOutUseCase: LogOutUseCase,
     private val saveMpGroupUseCase: SaveMpGroupUseCase,
     private val deleteMpGroupUseCase: DeleteMpGroupUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 
     ) : ViewModel() {
 
@@ -43,10 +45,22 @@ class SettingsViewModel(
 
     init {
         getSignedInAccount()
+        getCurrentUser()
         loadUsers()
         loadMpGroups()
         loadFirebaseCredential()
         loadExportFolderName()
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch (Dispatchers.IO){
+            getCurrentUserUseCase().onSuccess{ user ->
+                _uiState.update { it.copy(currentUser = user) }
+                Log.d("SettingsViewModel", "getCurrentUser: $user")
+            }.onFailure {
+                Log.d("SettingsViewModel", "getCurrentUser: $it")
+            }
+        }
     }
 
     private fun loadExportFolderName() {
@@ -214,9 +228,7 @@ class SettingsViewModel(
 
             is SettingsUiAction.OnConfirmAddUser -> {
                 viewModelScope.launch {
-                    // Generate a random ID for the new user
                     val newUser = User(
-                        id = java.util.UUID.randomUUID().toString(),
                         username = _uiState.value.tempUsername,
                         password = _uiState.value.tempPassword
                     )

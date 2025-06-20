@@ -10,6 +10,7 @@ data class SettingsUiState(
     val exportFolderName: String = "",
     val firebaseEmail: String = "",
     val firebasePassword: String = "",
+    val currentUser: User = User(),
     val users: List<User> = emptyList(),
     val mpGroups: List<MpGroup> = emptyList(),
 
@@ -35,4 +36,7 @@ data class SettingsUiState(
     val tempPassword: String = "",
     val tempMpGroupName: String = "",
     val tempMpGroupColor: Int = 0xFF000000.toInt()
-)
+){
+    val isAdmin: Boolean
+        get() = currentUser.admin
+}

@@ -1,5 +1,6 @@
 package com.zaed.ordertracker.domain.usecase.authentication
 
+import com.zaed.ordertracker.domain.model.User
 import com.zaed.ordertracker.domain.repository.AuthenticationRepository
 import com.zaed.ordertracker.domain.utils.InvalidPasswordException
 import com.zaed.ordertracker.domain.utils.InvalidUsernameException
@@ -12,13 +13,8 @@ class LoginUserUseCase(
         username: String,
         password: String,
     ): Result<Unit> {
-        if (!isValidPassword(password)) return Result.failure(InvalidPasswordException())
-        if (!isValidUsername(username)) return Result.failure(InvalidUsernameException())
-        val hashedPassword = hashWithMD5(password)
-        return repo.login(username, hashedPassword)
+        if (User.validatePassword(password).first) return Result.failure(InvalidPasswordException())
+        if (User.validateUsername(username).first) return Result.failure(InvalidUsernameException())
+        return repo.login(username, password)
     }
-
-    private fun isValidUsername(username: String): Boolean = username.isNotBlank() && username.length >= 3
-
-    private fun isValidPassword(password: String): Boolean = password.length >= 8
 }

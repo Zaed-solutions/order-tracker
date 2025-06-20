@@ -42,7 +42,7 @@ class UserRemoteSourceImpl(
     private suspend fun addUser(user: User): Result<Unit> {
         try {
             val docRef = usersCollection.document()
-            docRef.set(user.copy(id = user.id.ifEmpty { docRef.id })).await()
+            docRef.set(user.copy(id = docRef.id)).await()
             return Result.success(Unit)
         } catch (e: Exception) {
             crashlytics.recordException(e)

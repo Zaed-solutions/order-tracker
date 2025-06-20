@@ -28,6 +28,7 @@ fun TextInputTextField(
     imageVector: ImageVector? = null,
     @StringRes
     errorMessage: Int = 0,
+    readOnly: Boolean = false,
     isError: Boolean = false,
     withBorder: Boolean = false,
     containerColor: Color = MaterialTheme.colorScheme.background,
@@ -38,6 +39,7 @@ fun TextInputTextField(
         modifier = modifier,
         value = value,
         onValueChange = onValueChange,
+        readOnly = readOnly,
         label =
             if (label.isBlank()) {
                 null

@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.ordertracker.domain.model.Flight
+import com.zaed.ordertracker.domain.model.User
+import com.zaed.ordertracker.domain.usecase.SaveUserUseCase
+import com.zaed.ordertracker.domain.usecase.authentication.GetCurrentUserUseCase
 import com.zaed.ordertracker.domain.usecase.authentication.LogoutUserUseCase
 import com.zaed.ordertracker.domain.usecase.flight.CreateFlightUseCase
 import com.zaed.ordertracker.domain.usecase.flight.DeleteFlightUseCase
@@ -17,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class FlightsViewModel(
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getAllFlightsUseCase: GetAllFlightsUseCase,
     private val createFlightUseCase: CreateFlightUseCase,
     private val updateFlightUseCase: UpdateFlightUseCase,
@@ -29,6 +33,20 @@ class FlightsViewModel(
 
     init {
         fetchFlights()
+        fetchCurrentUser()
+    }
+
+    private fun fetchCurrentUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getCurrentUserUseCase()
+                .onSuccess { user ->
+                    _uiState.update { oldState ->
+                        oldState.copy(currentUser = user)
+                    }
+                }.onFailure {
+                    Log.e(TAG, "fetchCurrentUser: ", it)
+                }
+        }
     }
 
     private fun fetchFlights() {
@@ -61,6 +79,7 @@ class FlightsViewModel(
             else -> Unit
         }
     }
+
 
     private fun logout() {
         viewModelScope.launch(Dispatchers.IO) {

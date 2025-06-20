@@ -47,4 +47,12 @@
     <string name="search">Search</string>
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
+    <string name="profile">Profile</string>
+    <string name="username_empty">Username cannot be empty</string>
+    <string name="username_too_short">Username is too short</string>
+    <string name="username_too_long">Username is too long</string>
+    <string name="password_empty">Password cannot be empty</string>
+    <string name="password_too_short">Password must be at least 6 characters</string>
+    <string name="password_too_long">Password cannot be longer than 20 characters</string>
+    <string name="done">DONE</string>
 </resources>

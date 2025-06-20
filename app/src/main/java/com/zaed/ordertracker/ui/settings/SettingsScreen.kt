@@ -176,123 +176,130 @@ fun SettingScreenContent(
                 onSubmit = { onAction(SettingsUiAction.OnDriveEmailSubmitted) },
                 onCancel = { onAction(SettingsUiAction.OnDriveEmailEditCanceled) },
             )
+            if(state.isAdmin) {
+                // Export Folder Field
+                EditableTextField(
+                    label = "Export to Folder",
+                    value = state.exportFolderName,
+                    isEditing = state.isEditingExportFolder,
+                    onEditClick = { onAction(SettingsUiAction.OnExportFolderNameClicked) },
+                    onValueChange = { onAction(SettingsUiAction.OnExportFolderNameChanged(it)) },
+                    onSubmit = { onAction(SettingsUiAction.OnExportFolderNameSubmitted) },
+                    onCancel = { onAction(SettingsUiAction.OnExportFolderEditCanceled) },
+                )
 
-            // Export Folder Field
-            EditableTextField(
-                label = "Export to Folder",
-                value = state.exportFolderName,
-                isEditing = state.isEditingExportFolder,
-                onEditClick = { onAction(SettingsUiAction.OnExportFolderNameClicked) },
-                onValueChange = { onAction(SettingsUiAction.OnExportFolderNameChanged(it)) },
-                onSubmit = { onAction(SettingsUiAction.OnExportFolderNameSubmitted) },
-                onCancel = { onAction(SettingsUiAction.OnExportFolderEditCanceled) },
-            )
+                // Firebase Password Field
+                EditableTextField(
+                    label = "FireBase Password for email: ${state.firebaseEmail}",
+                    value = state.firebasePassword,
+                    isEditing = state.isEditingFirebasePassword,
+                    onEditClick = { onAction(SettingsUiAction.OnFirebasePasswordClicked) },
+                    onValueChange = { onAction(SettingsUiAction.OnFirebasePasswordChanged(it)) },
+                    onSubmit = { onAction(SettingsUiAction.OnFirebasePasswordSubmitted) },
+                    onCancel = { onAction(SettingsUiAction.OnFirebasePasswordEditCanceled) },
+                )
 
-            // Firebase Password Field
-            EditableTextField(
-                label = "FireBase Password for email: ${state.firebaseEmail}",
-                value = state.firebasePassword,
-                isEditing = state.isEditingFirebasePassword,
-                onEditClick = { onAction(SettingsUiAction.OnFirebasePasswordClicked) },
-                onValueChange = { onAction(SettingsUiAction.OnFirebasePasswordChanged(it)) },
-                onSubmit = { onAction(SettingsUiAction.OnFirebasePasswordSubmitted) },
-                onCancel = { onAction(SettingsUiAction.OnFirebasePasswordEditCanceled) },
-            )
-
-            // Users Section
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .weight(1f)
-                        .wrapContentHeight(),
-            ) {
-                Text("Users")
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(2.dp, Color.Black),
+                // Users Section
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .weight(1f)
+                            .wrapContentHeight(),
                 ) {
-                    LazyColumn {
-                        stickyHeader {
-                            Row(
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .background(MaterialTheme.colorScheme.outline),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    "UserName",
-                                    modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center,
-                                )
-                                Text(
-                                    "Password",
-                                    modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center,
-                                )
-                                Text(
-                                    "Edit",
-                                    modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center,
-                                )
-
-                                FilledIconButton(
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(16.dp),
-                                    onClick = { onAction(SettingsUiAction.OnAddNewUserClicked) },
+                    Text("Users")
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(2.dp, Color.Black),
+                    ) {
+                        LazyColumn {
+                            stickyHeader {
+                                Row(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .background(MaterialTheme.colorScheme.outline),
+                                    verticalAlignment = Alignment.CenterVertically,
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Add User",
+                                    Text(
+                                        "UserName",
+                                        modifier = Modifier.weight(1f),
+                                        textAlign = TextAlign.Center,
                                     )
+                                    Text(
+                                        "Password",
+                                        modifier = Modifier.weight(1f),
+                                        textAlign = TextAlign.Center,
+                                    )
+                                    Text(
+                                        "Edit",
+                                        modifier = Modifier.weight(1f),
+                                        textAlign = TextAlign.Center,
+                                    )
+
+                                    FilledIconButton(
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(16.dp),
+                                        onClick = { onAction(SettingsUiAction.OnAddNewUserClicked) },
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = "Add User",
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        items(state.users) { user ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                            ) {
-                                Text(
-                                    user.username,
-                                    modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center,
-                                )
-                                Text(
-                                    user.password,
-                                    modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center,
-                                )
-                                FilledIconButton(
-                                    onClick = { onAction(SettingsUiAction.OnEditUserClicked(user)) },
-                                    modifier =
-                                        Modifier
-                                            .weight(1f)
-                                            .wrapContentSize(),
+                            items(state.users) { user ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Edit,
-                                        contentDescription = "Edit User",
+                                    Text(
+                                        user.username,
+                                        modifier = Modifier.weight(1f),
+                                        textAlign = TextAlign.Center,
                                     )
-                                }
-                                FilledIconButton(
-                                    onClick = { onAction(SettingsUiAction.OnRemoveUserClicked(user)) },
-                                    modifier =
-                                        Modifier
-                                            .weight(1f)
-                                            .wrapContentSize(),
-                                    colors =
-                                        IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.error,
-                                        ),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        contentDescription = "Delete User",
+                                    Text(
+                                        user.password,
+                                        modifier = Modifier.weight(1f),
+                                        textAlign = TextAlign.Center,
                                     )
+                                    FilledIconButton(
+                                        onClick = { onAction(SettingsUiAction.OnEditUserClicked(user)) },
+                                        modifier =
+                                            Modifier
+                                                .weight(1f)
+                                                .wrapContentSize(),
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Edit,
+                                            contentDescription = "Edit User",
+                                        )
+                                    }
+                                    FilledIconButton(
+                                        onClick = {
+                                            onAction(
+                                                SettingsUiAction.OnRemoveUserClicked(
+                                                    user
+                                                )
+                                            )
+                                        },
+                                        modifier =
+                                            Modifier
+                                                .weight(1f)
+                                                .wrapContentSize(),
+                                        colors =
+                                            IconButtonDefaults.filledIconButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.error,
+                                            ),
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = "Delete User",
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -339,16 +346,17 @@ fun SettingScreenContent(
                                     modifier = Modifier.weight(1f),
                                     textAlign = TextAlign.Center,
                                 )
-
-                                FilledIconButton(
-                                    modifier = Modifier.weight(1f),
-                                    shape = RoundedCornerShape(16.dp),
-                                    onClick = { onAction(SettingsUiAction.OnAddNewMpGroupClicked) },
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Add,
-                                        contentDescription = "Add MP Group",
-                                    )
+                                if(state.isAdmin) {
+                                    FilledIconButton(
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(16.dp),
+                                        onClick = { onAction(SettingsUiAction.OnAddNewMpGroupClicked) },
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Add,
+                                            contentDescription = "Add MP Group",
+                                        )
+                                    }
                                 }
                             }
                         }
