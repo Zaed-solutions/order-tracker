@@ -28,4 +28,8 @@ sealed interface FlightsUiAction {
     data object ResetError : FlightsUiAction
 
     data object Logout : FlightsUiAction
+
+    data class UpdateFlightsList(
+        val flights: List<Flight>,
+    ) : FlightsUiAction
 }

@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.ordertracker.domain.model.Flight
-import com.zaed.ordertracker.domain.model.User
-import com.zaed.ordertracker.domain.usecase.SaveUserUseCase
 import com.zaed.ordertracker.domain.usecase.authentication.GetCurrentUserUseCase
 import com.zaed.ordertracker.domain.usecase.authentication.LogoutUserUseCase
 import com.zaed.ordertracker.domain.usecase.flight.CreateFlightUseCase
@@ -58,6 +56,7 @@ class FlightsViewModel(
                             oldState.copy(isLoading = false, allFlights = flights)
                         }
                         filterFlights()
+                        Log.d(TAG, "fetchFlights: $flights")
                     }.onFailure {
                         _uiState.update { oldState ->
                             oldState.copy(isLoading = false)
@@ -76,10 +75,31 @@ class FlightsViewModel(
             is FlightsUiAction.UpdateSearchQuery -> updateSearchQuery(action.query)
             FlightsUiAction.ResetError -> _uiState.update { it.copy(error = null) }
             FlightsUiAction.Logout -> logout()
+            is FlightsUiAction.UpdateFlightsList -> {
+                updateFlights(action.flights)
+            }
+
             else -> Unit
         }
     }
 
+    private fun updateFlights(flights: List<Flight>) {
+        viewModelScope.launch(Dispatchers.Default) {
+            Log.d(TAG, "updateFlights: $flights")
+            uiState.value.displayedFlights.forEach { flight ->
+                if (flights.none { flight.id == it.id }) {
+                    deleteFlight(flight.id)
+                } else {
+                    val matchingFlight = flights.firstOrNull { it.id == flight.id }
+                    matchingFlight?.let {
+                        if (it != flight) {
+                            updateFlight(flight)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     private fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -149,6 +169,7 @@ class FlightsViewModel(
                     _uiState.update { oldState ->
                         oldState.copy(isLoading = false)
                     }
+                    Log.d(TAG, "deleteFlight: success: $flightId")
                 }.onFailure {
                     if (it is FlightHasUnprocessedShipmentsException) {
                         _uiState.update { oldState ->
@@ -171,6 +192,7 @@ class FlightsViewModel(
                     _uiState.update { oldState ->
                         oldState.copy(isLoading = false)
                     }
+                    Log.d(TAG, "addFlight: Flight added successfully")
                 }.onFailure {
                     _uiState.update { oldState ->
                         oldState.copy(isLoading = false)
