@@ -81,9 +81,10 @@ fun MasterPackageScreenContent(
     modifier: Modifier = Modifier,
     masterPackages: List<MasterPackage>,
     masterPackageGroup: List<MpGroup>,
+    isAddEnabled: Boolean,
+    isEditMode: Boolean,
     onAddNewMasterPackage: (MasterPackage) -> Unit = {},
-    onEditMasterPackage: (MasterPackage) -> Unit = {},
-    onDeleteMasterPackage: (MasterPackage) -> Unit = {},
+    onUpdateMasterPackages: (List<MasterPackage>) -> Unit = {},
     onMasterPackageClicked: (MasterPackage) -> Unit = {},
     onMasterPackageGroupClicked: (MpGroup) -> Unit = {},
     windowWidthSizeClass: WindowWidthSizeClass,
@@ -222,7 +223,7 @@ fun MasterPackageScreenContent(
                 onDismiss = { isEditMasterPackageBottomSheetVisible = false },
                 onEditMasterPackage = {
                     isEditMasterPackageBottomSheetVisible = false
-                    onEditMasterPackage(it)
+//                    onEditMasterPackage(it)
                 },
             )
         }
@@ -231,7 +232,7 @@ fun MasterPackageScreenContent(
             label = selectedMasterPackage.name,
             onDismiss = { isDeleteMasterPackageBottomSheetVisible = false },
             onConfirm = {
-                onDeleteMasterPackage(selectedMasterPackage)
+//                onDeleteMasterPackage(selectedMasterPackage)
                 isDeleteMasterPackageBottomSheetVisible = false
             },
         )
@@ -1559,52 +1560,52 @@ fun CompactMasterPackageListHeader(modifier: Modifier = Modifier) {
 @Composable
 private fun MpItemPreview() {
     ProjectTemplateTheme {
-        MasterPackageScreenContent(
-            masterPackages =
-                listOf(
-                    MasterPackage(
-                        id = "1",
-                        name = "Group1",
-                        count = 10,
-                        type = MasterPackageType.T,
-                        weightKg = 50.5,
-                    ),
-                    MasterPackage(
-                        id = "2",
-                        name = "Group2",
-                        count = 20,
-                        type = MasterPackageType.T,
-                        weightKg = 60.5,
-                    ),
-                ),
-            masterPackageGroup =
-                listOf(
-                    MpGroup(
-                        id = "1",
-                        isExported = true,
-                        name = "Group1",
-                        color = 0xFF2196F3.toInt(),
-                        masterPackages =
-                            listOf(
-                                MasterPackage(
-                                    id = "1",
-                                    name = "MP1",
-                                    count = 10,
-                                    type = MasterPackageType.T,
-                                    exported = true,
-                                ),
-                                MasterPackage(
-                                    id = "2",
-                                    name = "MP2",
-                                    count = 20,
-                                    type = MasterPackageType.T,
-                                ),
-                            ),
-                    ),
-                ),
-            windowWidthSizeClass = WindowWidthSizeClass.MEDIUM,
-            searchQuery = "",
-            onUpdateSearchQuery = {}
-        )
+//        MasterPackageScreenContent(
+//            masterPackages =
+//                listOf(
+//                    MasterPackage(
+//                        id = "1",
+//                        name = "Group1",
+//                        count = 10,
+//                        type = MasterPackageType.T,
+//                        weightKg = 50.5,
+//                    ),
+//                    MasterPackage(
+//                        id = "2",
+//                        name = "Group2",
+//                        count = 20,
+//                        type = MasterPackageType.T,
+//                        weightKg = 60.5,
+//                    ),
+//                ),
+//            masterPackageGroup =
+//                listOf(
+//                    MpGroup(
+//                        id = "1",
+//                        isExported = true,
+//                        name = "Group1",
+//                        color = 0xFF2196F3.toInt(),
+//                        masterPackages =
+//                            listOf(
+//                                MasterPackage(
+//                                    id = "1",
+//                                    name = "MP1",
+//                                    count = 10,
+//                                    type = MasterPackageType.T,
+//                                    exported = true,
+//                                ),
+//                                MasterPackage(
+//                                    id = "2",
+//                                    name = "MP2",
+//                                    count = 20,
+//                                    type = MasterPackageType.T,
+//                                ),
+//                            ),
+//                    ),
+//                ),
+//            windowWidthSizeClass = WindowWidthSizeClass.MEDIUM,
+//            searchQuery = "",
+//            onUpdateSearchQuery = {}
+//        )
     }
 }

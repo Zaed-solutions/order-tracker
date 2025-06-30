@@ -238,7 +238,26 @@ class FlightDetailsViewModel(
                     action.query,
                 )
 
+            is FlightDetailsUiAction.UpdateShipmentsList -> updateShipments(action.shipments)
             else -> Unit
+        }
+    }
+
+    private fun updateShipments(shipments: List<Shipment>) {
+        viewModelScope.launch(Dispatchers.Default) {
+            Log.d(TAG, "updateFlights: $shipments")
+            uiState.value.displayShipments.forEach { shipment ->
+                if (shipments.none { shipment.id == it.id }) {
+                    deleteShipment(shipment.id)
+                } else {
+                    val matchingFlight = shipments.firstOrNull { it.id == shipment.id }
+                    matchingFlight?.let {
+                        if (it != shipment) {
+                            updateShipment(shipment)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -297,7 +316,11 @@ class FlightDetailsViewModel(
             } else {
                 val filteredShipments =
                     allShipments.filter { shipment ->
-                        shipment.shipmentNumber.contains(query, ignoreCase = true) && shipment.masterPackageId.isBlank()
+                        shipment.shipmentNumber.contains(
+                            query,
+                            ignoreCase = true,
+                        ) &&
+                            shipment.masterPackageId.isBlank()
                     }
                 _uiState.update { oldState ->
                     oldState.copy(displayShipments = filteredShipments)

@@ -13,6 +13,11 @@ sealed interface FlightDetailsUiAction {
     data class UpdateShipmentSearchQuery(val query: String): FlightDetailsUiAction
 
     data class UpdateMasterPackageSearchQuery(val query: String): FlightDetailsUiAction
+    data class UpdateShipmentsList(val shipments: List<Shipment>): FlightDetailsUiAction
+    data class UpdateMasterPackages(
+        val masterPackages: List<MasterPackage>,
+        val mpGroups: List<MpGroup>
+    ): FlightDetailsUiAction
 
     data object ResetNeedToLogin : FlightDetailsUiAction
 

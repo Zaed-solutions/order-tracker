@@ -112,6 +112,7 @@ fun MasterPackageGroupDetailsScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
+            /*
             MasterPackageScreenContent(
                 modifier = modifier.fillMaxSize(),
                 masterPackages = masterPackages,
@@ -124,6 +125,7 @@ fun MasterPackageGroupDetailsScreenContent(
                 searchQuery = searchQuery,
                 onUpdateSearchQuery = { onAction(MasterPackageGroupDetailsUiAction.OnMasterPackageSearchQueryChanged(it)) },
             )
+             */
         }
 
         if (showEditDialog) {

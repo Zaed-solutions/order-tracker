@@ -89,16 +89,17 @@ fun MasterPackageDetailsScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
-            ShipmentsScreenContent(
-                modifier = modifier.fillMaxSize(),
-                shipments = shipments,
-                onAddShipment = { onAction(MasterPackageDetailsUiAction.OnAddNewShipment(it)) },
-                onEditShipment = { onAction(MasterPackageDetailsUiAction.OnEditShipment(it)) },
-                onDeleteShipment = { onAction(MasterPackageDetailsUiAction.OnDeleteShipment(it)) },
-                windowWidthSizeClass = windowWidthSizeClass,
-                searchQuery = searchQuery,
-                onUpdateSearchQuery = { onAction(MasterPackageDetailsUiAction.OnUpdateSearchQuery(it)) },
-            )
+//            ShipmentsScreenContent(
+//                modifier = modifier.fillMaxSize(),
+//                shipments = shipments,
+//                onAddShipment = { onAction(MasterPackageDetailsUiAction.OnAddNewShipment(it)) },
+//                onEditShipment = { onAction(MasterPackageDetailsUiAction.OnEditShipment(it)) },
+//                onDeleteShipment = { onAction(MasterPackageDetailsUiAction.OnDeleteShipment(it)) },
+//                windowWidthSizeClass = windowWidthSizeClass,
+//                searchQuery = searchQuery,
+//                onUpdateSearchQuery = { onAction(MasterPackageDetailsUiAction.OnUpdateSearchQuery(it)) },
+//            )
+            //TODO
         }
     }
 
