@@ -253,7 +253,7 @@ class FlightDetailsViewModel(
                     val matchingFlight = shipments.firstOrNull { it.id == shipment.id }
                     matchingFlight?.let {
                         if (it != shipment) {
-                            updateShipment(shipment)
+                            updateShipment(it)
                         }
                     }
                 }

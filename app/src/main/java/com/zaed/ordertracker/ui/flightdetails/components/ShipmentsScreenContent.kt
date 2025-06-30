@@ -196,6 +196,7 @@ fun AddShipmentItem(
         Text(
             text = shipment.addedAt.formatDate(),
             textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall,
             modifier =
                 Modifier
                     .weight(1f)
@@ -204,6 +205,7 @@ fun AddShipmentItem(
         Text(
             text = shipment.addedAt.formatTime(),
             textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall,
             modifier =
                 Modifier
                     .weight(1f)

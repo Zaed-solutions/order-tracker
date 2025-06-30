@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -16,8 +17,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +45,7 @@ fun ExpandedShipmentItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(top = 8.dp),
+        modifier = modifier.padding(top = 8.dp).height(70.dp),
     ) {
         Icon(
             imageVector = if (shipment.exported) Icons.Filled.Circle else Icons.Outlined.Circle,
@@ -71,6 +74,7 @@ fun ExpandedShipmentItem(
                 )
             }
         }
+        VerticalDivider(modifier = Modifier)
         AnimatedContent(modifier = Modifier.weight(1f), targetState = isEditMode && shipment.exported.not()) { targetState ->
             if (targetState) {
                 NumberInputTextField(
@@ -165,6 +169,7 @@ fun ExpandedShipmentItem(
         Text(
             text = shipment.addedAt.formatDate(),
             textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall,
             modifier =
                 Modifier
                     .weight(1f)
@@ -173,6 +178,7 @@ fun ExpandedShipmentItem(
         Text(
             text = shipment.addedAt.formatTime(),
             textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall,
             modifier =
                 Modifier
                     .weight(1f)
